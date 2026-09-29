@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REMIX BET</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+      color: #111827;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #d1d5db;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #16a34a;
+      color: white;
+    }
+
+    button:hover {
+      background: #15803d;
+    }
+
+    #matches {
+      margin-top: 15px;
+    }
+
+    .match {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 12px;
+    }
+
+    .teams {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .status {
+      color: #6b7280;
+      margin-top: 5px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>⚽ REMIX BET</h1>
+    <p>Football • Analyses • Matchs</p>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+      <h2>Bienvenue sur REMIX BET</h2>
+      <p>
+        Consultez les matchs de football et préparez vos analyses.
+      </p>
+
+      <button onclick="chargerMatchs()">
+        🔄 Charger les matchs
+      </button>
+
+      <div id="matches">
+        <p>Appuyez sur le bouton pour afficher les matchs.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    REMIX BET © 2026
+  </footer>
+
+  <script>
+    function chargerMatchs() {
+      const zone = document.getElementById("matches");
+
+      zone.innerHTML = `
+        <div class="match">
+          <div class="teams">⚽ Matchs de football</div>
+          <div class="status">
+            La connexion à API-Football sera ajoutée dans la prochaine étape.
+          </div>
+        </div>
+      `;
+    }
+  </script>
+
+</body>
+</html>
