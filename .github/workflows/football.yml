@@ -1,0 +1,39 @@
+name: Mise à jour des matchs REMIX BET
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-football:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer REMIX-BET
+        uses: actions/checkout@v4
+
+      - name: Récupérer les matchs du jour
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: |
+          mkdir -p data
+
+          DATE=$(date -u +%Y-%m-%d)
+
+          curl -s \
+            --request GET \
+            --url "https://v3.football.api-sports.io/fixtures?date=$DATE" \
+            --header "x-apisports-key: $API_FOOTBALL_KEY" \
+            > data/fixtures.json
+
+      - name: Enregistrer les données
+        run: |
+          git config user.name "REMIX BET"
+          git config user.email "remix-bet@users.noreply.github.com"
+          git add data/fixtures.json
+          git diff --cached --quiet || git commit -m "Mise à jour des matchs"
+          git push
