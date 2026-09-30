@@ -125,21 +125,54 @@
   <footer>
     REMIX BET © 2026
   </footer>
+<script>
+  async function chargerMatchs() {
+    const zone = document.getElementById("matches");
 
-  <script>
-    function chargerMatchs() {
-      const zone = document.getElementById("matches");
+    zone.innerHTML = "<p>🔄 Chargement des matchs...</p>";
 
-      zone.innerHTML = `
-        <div class="match">
-          <div class="teams">⚽ Matchs de football</div>
-          <div class="status">
-            La connexion à API-Football sera ajoutée dans la prochaine étape.
+    try {
+      const response = await fetch("data/fixtures.json");
+
+      if (!response.ok) {
+        throw new Error("Impossible de charger les matchs");
+      }
+
+      const data = await response.json();
+      const matchs = data.response || [];
+
+      if (matchs.length === 0) {
+        zone.innerHTML = "<p>Aucun match trouvé pour aujourd'hui.</p>";
+        return;
+      }
+
+      zone.innerHTML = "";
+
+      matchs.forEach(match => {
+        const element = document.createElement("div");
+        element.className = "match";
+
+        element.innerHTML = `
+          <div class="teams">
+            ⚽ ${match.teams.home.name}
+            — ${match.teams.away.name}
           </div>
-        </div>
-      `;
+
+          <div class="status">
+            ${match.league.name}
+          </div>
+        `;
+
+        zone.appendChild(element);
+      });
+
+    } catch (erreur) {
+      console.error(erreur);
+      zone.innerHTML =
+        "<p>❌ Impossible de charger les matchs.</p>";
     }
-  </script>
+  }
+</script>
 
 </body>
 </html>
