@@ -3,95 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>REMIX BET</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: #f2f4f7;
-      color: #111827;
+      margin: 0;
+      background: #f5f5f5;
+      color: #222;
     }
 
     header {
-      background: #111827;
-      color: white;
-      padding: 20px;
+      background: #ffd400;
+      color: #003399;
       text-align: center;
+      padding: 20px;
     }
 
     header h1 {
       margin: 0;
-      font-size: 30px;
-    }
-
-    header p {
-      margin: 6px 0 0;
-      color: #d1d5db;
     }
 
     .container {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 15px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 15px;
       padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    }
-
-    .card h2 {
-      margin-top: 0;
     }
 
     button {
-      border: none;
-      border-radius: 10px;
-      padding: 12px 18px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      background: #16a34a;
+      background: #003399;
       color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 8px 0;
+      font-size: 16px;
     }
 
     button:hover {
-      background: #15803d;
-    }
-
-    #matches {
-      margin-top: 15px;
+      opacity: 0.9;
     }
 
     .match {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
+      background: white;
+      margin: 15px 0;
       padding: 15px;
-      margin-top: 12px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     .teams {
       font-size: 18px;
       font-weight: bold;
+      margin-bottom: 10px;
     }
 
     .status {
-      color: #6b7280;
-      margin-top: 5px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .analyse {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     footer {
       text-align: center;
-      padding: 25px;
-      color: #6b7280;
+      padding: 20px;
+      margin-top: 30px;
+      color: #555;
     }
   </style>
 </head>
@@ -105,8 +88,9 @@
 
   <div class="container">
 
-    <div class="card">
+    <div>
       <h2>Bienvenue sur REMIX BET</h2>
+
       <p>
         Consultez les matchs de football et préparez vos analyses.
       </p>
@@ -125,13 +109,17 @@
   <footer>
     REMIX BET © 2026
   </footer>
+
 <script>
+
   async function chargerMatchs() {
+
     const zone = document.getElementById("matches");
 
     zone.innerHTML = "<p>🔄 Chargement des matchs...</p>";
 
     try {
+
       const response = await fetch("data/fixtures.json");
 
       if (!response.ok) {
@@ -139,72 +127,103 @@
       }
 
       const data = await response.json();
+
       const matchs = data.response || [];
 
       if (matchs.length === 0) {
-        zone.innerHTML = "<p>Aucun match trouvé pour aujourd'hui.</p>";
+
+        zone.innerHTML =
+          "<p>Aucun match trouvé pour aujourd'hui.</p>";
+
         return;
       }
 
       zone.innerHTML = "";
 
       matchs.forEach(match => {
+
         const element = document.createElement("div");
+
         element.className = "match";
 
-          element.innerHTML = `
-  <div class="teams">
-    ⚽ ${match.teams.home.name}
-    — ${match.teams.away.name}
-  </div>
+        element.innerHTML = `
 
-  <div class="status">
-    🏆 ${match.league.name}
-  </div>
-
-  <button onclick="analyserMatch(
-    '${match.teams.home.name.replace(/'/g, "\\'")}',
-    '${match.teams.away.name.replace(/'/g, "\\'")}'
-  )">
-    📊 Analyser
-  </button>
-`;
+          <div class="teams">
+            ⚽ ${match.teams.home.name}
+            — ${match.teams.away.name}
+          </div>
 
           <div class="status">
-            ${match.league.name}
+            🏆 ${match.league.name}
           </div>
+
+          <button onclick="analyserMatch(
+            '${match.teams.home.name.replace(/'/g, "\\'")}',
+            '${match.teams.away.name.replace(/'/g, "\\'")}'
+          )">
+            📊 Analyser
+          </button>
+
         `;
 
         zone.appendChild(element);
+
       });
 
     } catch (erreur) {
+
       console.error(erreur);
+
       zone.innerHTML =
         "<p>❌ Impossible de charger les matchs.</p>";
+
     }
-  }function analyserMatch(equipeDomicile, equipeExterieure) {
-  const zone = document.getElementById("matches");
 
-  zone.innerHTML = `
-    <div class="analyse">
-      <h2>📊 Analyse REMIX BET</h2>
-
-      <h3>⚽ ${equipeDomicile} — ${equipeExterieure}</h3>
-
-      <p>📈 Analyse statistique en préparation...</p>
-
-      <p>🏠 Équipe à domicile : ${equipeDomicile}</p>
-      <p>✈️ Équipe extérieure : ${equipeExterieure}</p>
-
-      <p>🔎 Les statistiques détaillées seront chargées prochainement.</p>
-
-      <button onclick="chargerMatchs()">
-        ⬅️ Retour aux matchs
-      </button>
-    </div>
-  `;
   }
+
+
+  function analyserMatch(equipeDomicile, equipeExterieure) {
+
+    const zone = document.getElementById("matches");
+
+    zone.innerHTML = `
+
+      <div class="analyse">
+
+        <h2>📊 Analyse REMIX BET</h2>
+
+        <h3>
+          ⚽ ${equipeDomicile} — ${equipeExterieure}
+        </h3>
+
+        <p>
+          📈 Analyse statistique en préparation...
+        </p>
+
+        <p>
+          🏠 Équipe à domicile :
+          ${equipeDomicile}
+        </p>
+
+        <p>
+          ✈️ Équipe extérieure :
+          ${equipeExterieure}
+        </p>
+
+        <p>
+          🔎 Les statistiques détaillées seront chargées prochainement.
+        </p>
+
+        <button onclick="chargerMatchs()">
+          ⬅️ Retour aux matchs
+        </button>
+
+      </div>
+
+    `;
+
+  }
+
 </script>
 
 </body>
