@@ -152,11 +152,23 @@
         const element = document.createElement("div");
         element.className = "match";
 
-        element.innerHTML = `
-          <div class="teams">
-            ⚽ ${match.teams.home.name}
-            — ${match.teams.away.name}
-          </div>
+          element.innerHTML = `
+  <div class="teams">
+    ⚽ ${match.teams.home.name}
+    — ${match.teams.away.name}
+  </div>
+
+  <div class="status">
+    🏆 ${match.league.name}
+  </div>
+
+  <button onclick="analyserMatch(
+    '${match.teams.home.name.replace(/'/g, "\\'")}',
+    '${match.teams.away.name.replace(/'/g, "\\'")}'
+  )">
+    📊 Analyser
+  </button>
+`;
 
           <div class="status">
             ${match.league.name}
@@ -171,6 +183,27 @@
       zone.innerHTML =
         "<p>❌ Impossible de charger les matchs.</p>";
     }
+  }function analyserMatch(equipeDomicile, equipeExterieure) {
+  const zone = document.getElementById("matches");
+
+  zone.innerHTML = `
+    <div class="analyse">
+      <h2>📊 Analyse REMIX BET</h2>
+
+      <h3>⚽ ${equipeDomicile} — ${equipeExterieure}</h3>
+
+      <p>📈 Analyse statistique en préparation...</p>
+
+      <p>🏠 Équipe à domicile : ${equipeDomicile}</p>
+      <p>✈️ Équipe extérieure : ${equipeExterieure}</p>
+
+      <p>🔎 Les statistiques détaillées seront chargées prochainement.</p>
+
+      <button onclick="chargerMatchs()">
+        ⬅️ Retour aux matchs
+      </button>
+    </div>
+  `;
   }
 </script>
 
