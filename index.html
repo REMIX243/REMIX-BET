@@ -71,18 +71,17 @@ a{color:var(--blue);font-weight:700}.pill{display:inline-block;background:#eef2f
 <p class="muted">Les rencontres dépendent des compétitions accessibles auprès du fournisseur de données. Maximum 14 jours par recherche.</p>
 </div>
 <div id="matchesList" aria-live="polite"><div class="notice">Choisis les dates puis charge les matchs.</div></div>
-</section>
-
-<section id="analysis" class="page hidden">
+ </section><section id="analysis" class="page hidden">
 <div class="panel"><h2>📊 Analyses REMIX BET</h2><p>Les analyses sont construites uniquement à partir des informations réellement renvoyées par le fournisseur. Choisis « Voir l'analyse » sur une rencontre.</p><div id="analysisContent" class="notice">Aucune rencontre sélectionnée. Charge les matchs puis ouvre une analyse.</div></div>
 </section>
 
 <section id="referral" class="panel page hidden">
 <h2>🤝 Parrainage <span class="brandName">REMIX BET</span></h2>
 <p>Partage notre espace football avec tes amis.</p>
-<p><strong>Code de présentation :</strong> <span id="referralCode">REM1XBET</span></p>
-<p><a id="referralLink" href="https://remixntambue8.wixsite.com/mysite" target="_blank" rel="noopener noreferrer">Visiter notre site de présentation</a></p>
-<button id="copyReferral" class="light">Copier le code</button>
+<p><strong>Code promo :</strong> <span id="referralCode">REM1XBET</span></p>
+<p>Rejoins 1xBet en passant par le lien partenaire de REMIX BET. Si le code n'apparaît pas automatiquement pendant l'inscription, saisis <strong>REM1XBET</strong> lorsque le formulaire le demande.</p>
+<p><a id="referralLink" class="button" href="https://reffpa.com/L?tag=d_4768125m_129629c_REMIX_BET&amp;site=4768125&amp;ad=129629" target="_blank" rel="noopener noreferrer">S'inscrire sur 1xBet avec REM1XBET</a></p>
+<button id="copyReferral" class="light">Copier le code promo</button>
 </section>
 
 <section id="settings" class="panel page hidden">
@@ -93,7 +92,7 @@ a{color:var(--blue);font-weight:700}.pill{display:inline-block;background:#eef2f
 <label for="customSlogan">Slogan</label><input id="customSlogan" maxlength="100" value="Construisons nos opportunités ensemble">
 <div class="row"><div><label for="customBlue">Couleur principale (bleu)</label><input id="customBlue" type="color" value="#003399"></div><div><label for="customYellow">Couleur secondaire (jaune)</label><input id="customYellow" type="color" value="#ffd400"></div></div>
 <label for="customReferral">Code de présentation</label><input id="customReferral" maxlength="30" value="REM1XBET">
-<label for="customLink">Lien de présentation</label><input id="customLink" type="url" value="https://remixntambue8.wixsite.com/mysite">
+<label for="customLink">Lien de présentation</label><input id="customLink" type="url" value="https://reffpa.com/L?tag=d_4768125m_129629c_REMIX_BET&amp;site=4768125&amp;ad=129629">
 <div class="row"><button id="saveBrand">Enregistrer la personnalisation</button><button id="resetBrand" class="secondary">Réinitialiser</button></div>
 <p id="settingsMessage" class="muted" role="status"></p>
 <div class="notice">Pour que les personnalisations soient visibles par tous les utilisateurs sur leurs téléphones, il faudra ensuite enregistrer ces paramètres dans une base de données sécurisée. Ici, ils sont locaux à cet appareil.</div>
@@ -137,17 +136,7 @@ authButton.addEventListener("click",async()=>{
   authMessage.textContent=errors[error.code]||"Erreur : "+error.message;
  }finally{authButton.disabled=false}
 });
-auth.onAuthStateChanged(user=>{
- if(user){authSection.classList.add("hidden");privateApp.classList.remove("hidden");$("userLabel").textContent=(user.displayName?user.displayName+" — ":"")+user.email;const admin=user.email.toLowerCase()===ADMIN_EMAIL;$("settingsNav").classList.toggle("hidden",!admin);$("roleLabel").textContent=admin?"Administrateur":"Membre";applyBrand();showPage("home")}
- else{privateApp.classList.add("hidden");authSection.classList.remove("hidden")}
-});
-$("logout").addEventListener("click",()=>auth.signOut());
-function showPage(page){document.querySelectorAll(".page").forEach(el=>el.classList.add("hidden"));$(page).classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}
-document.querySelectorAll("nav button[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
-document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.goto)));
-
-const API_BASE="https://remix-bet.remixntambue8.workers.dev";
-const fromInput=$("dateFrom"),toInput=$("dateTo"),loadButton=$("loadButton"),zone=$("matchesList");
+auth.onAuthStateChanged(user=>{const fromInput=$("dateFrom"),toInput=$("dateTo"),loadButton=$("loadButton"),zone=$("matchesList");
 function dateString(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 const today=new Date(),end=new Date(today);end.setDate(end.getDate()+6);fromInput.value=dateString(today);toInput.value=dateString(end);
 function message(text){zone.replaceChildren();const p=document.createElement("div");p.className="notice";p.textContent=text;zone.appendChild(p)}
@@ -203,8 +192,8 @@ async function chargerMatchs(){
 loadButton.addEventListener("click",chargerMatchs);
 $("copyReferral").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("referralCode").textContent);$("copyReferral").textContent="Code copié !"}catch{$("copyReferral").textContent="Copie non disponible"}});
 const BRAND_KEY="remixbet_brand_v1";
-function defaults(){return{title:"REMIX BET",subtitle:"ANALYSES • STATISTIQUES • SÉLECTIONS",slogan:"Construisons nos opportunités ensemble",blue:"#003399",yellow:"#ffd400",code:"REM1XBET",link:"https://remixntambue8.wixsite.com/mysite"}}
-function getBrand(){try{return {...defaults(),...JSON.parse(localStorage.getItem(BRAND_KEY)||"{}")}}catch{return defaults()}}
+function defaults(){return{title:"REMIX BET",subtitle:"ANALYSES • STATISTIQUES • SÉLECTIONS",slogan:"Construisons nos opportunités ensemble",blue:"#003399",yellow:"#ffd400",code:"REM1XBET",link:"https://reffpa.com/L?tag=d_4768125m_129629c_REMIX_BET&site=4768125&ad=129629"}}
+function getBrand(){try{const saved=JSON.parse(localStorage.getItem(BRAND_KEY)||"{}");if(saved.link==="https://remixntambue8.wixsite.com/mysite")saved.link=defaults().link;return {...defaults(),...saved}}catch{return defaults()}}
 function applyBrand(){
  const b=getBrand();document.documentElement.style.setProperty("--blue",b.blue);document.documentElement.style.setProperty("--yellow",b.yellow);
  $("brandTitle").textContent="⚽ "+b.title;$("brandSubtitle").textContent=b.subtitle;$("brandSlogan").textContent=b.slogan;
@@ -223,3 +212,12 @@ $("year").textContent=new Date().getFullYear();
 </script>
 </body>
 </html>
+ if(user){authSection.classList.add("hidden");privateApp.classList.remove("hidden");$("userLabel").textContent=(user.displayName?user.displayName+" — ":"")+user.email;const admin=user.email.toLowerCase()===ADMIN_EMAIL;$("settingsNav").classList.toggle("hidden",!admin);$("roleLabel").textContent=admin?"Administrateur":"Membre";applyBrand();showPage("home")}
+ else{privateApp.classList.add("hidden");authSection.classList.remove("hidden")}
+});
+$("logout").addEventListener("click",()=>auth.signOut());
+function showPage(page){document.querySelectorAll(".page").forEach(el=>el.classList.add("hidden"));$(page).classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll("nav button[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.goto)));
+
+const API_BASE="https://remix-bet.remixntambue8.workers.dev";
