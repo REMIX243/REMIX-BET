@@ -1,356 +1,229 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>REMIX BET</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-    
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#003399">
-<title>REMIX BET | Football & Analyses</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffd400">
+<title>REMIX BET</title>
 <style>
-:root {
-  --blue:#003399;
-  --yellow:#ffd400;
-  --bg:#f2f5fa;
-  --white:#fff;
-}
+:root{--yellow:#ffd400;--blue:#003399;--ink:#172033;--muted:#667085;--bg:#f3f5f9}
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:#172033;
-}
-header{
-  background:var(--yellow);
-  color:var(--blue);
-  text-align:center;
-  padding:24px 15px;
-}
-header h1{margin:0;font-size:30px;font-weight:900}
-header p{margin:8px 0 0}
-nav{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:8px;
-  padding:12px;
-  background:var(--blue);
-}
-nav button{
-  background:transparent;
-  color:white;
-  border:1px solid #ffffff55;
-  padding:10px 13px;
-  border-radius:8px;
-}
-main{max-width:850px;margin:auto;padding:16px}
-.panel,.match,.analysis{
-  background:white;
-  padding:17px;
-  margin:14px 0;
-  border-radius:12px;
-  box-shadow:0 2px 8px #0000000c;
-}
-h2{color:var(--blue)}
-button,.cta{
-  display:inline-block;
-  background:var(--blue);
-  color:white;
-  border:0;
-  border-radius:8px;
-  padding:12px 16px;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
-  text-decoration:none;
-  margin:5px 3px;
-}
-.yellow{background:var(--yellow);color:var(--blue)}
-input{
-  padding:12px;
-  border:1px solid #ccd3df;
-  border-radius:8px;
-  font-size:16px;
-  width:100%;
-  margin:8px 0;
-}
-.teams{font-size:18px;font-weight:bold;margin:12px 0}
-.meta{color:#64748b;font-size:14px;line-height:1.7}
-.status{
-  display:inline-block;
-  background:#e9efff;
-  color:var(--blue);
-  padding:5px 9px;
-  border-radius:20px;
-  font-size:12px;
-}
-.hidden{display:none}
-.notice{
-  padding:12px;
-  background:#fff8d9;
-  border-radius:8px;
-  line-height:1.5;
-}
-footer{
-  background:var(--blue);
-  color:white;
-  text-align:center;
-  padding:24px 12px;
-  margin-top:30px;
-}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--yellow);color:var(--blue);text-align:center;padding:22px 14px}
+header h1{margin:0;font-size:30px}
+header p{margin:7px 0 0;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:18px}
+.panel,.match{background:#fff;border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 3px 12px #17203312}
+h2{margin:0 0 8px;color:var(--blue)}
+p{line-height:1.45}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:14px}
+label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px}
+input{padding:11px;border:1px solid #cbd2df;border-radius:8px;font:inherit}
+button{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:12px 16px;font-size:15px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+#message{padding:12px;border-radius:9px;background:#f1f4fb;color:#344054}
+.match{border-left:5px solid var(--yellow)}
+.competition{font-size:13px;color:var(--muted);font-weight:700}
+.teams{font-size:18px;font-weight:800;margin:9px 0}
+.meta{color:#475467;font-size:14px;line-height:1.6}
+.score{font-weight:800;color:var(--blue)}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:13px}
+.small{font-size:13px;color:var(--muted)}
+@media(max-width:560px){main{padding:12px}.controls>*{width:100%}button{width:100%}}
 </style>
 </head>
 <body>
-
 <header>
-  <h1>⚽ REMIX BET</h1>
-  <p>ANALYSES • STATISTIQUES • SÉLECTIONS</p>
-  <p>Construisons nos opportunités ensemble</p>
+<h1>⚽ REMIX BET</h1>
+<p>Football • Analyses • Matchs</p>
 </header>
 
-<nav>
-  <button onclick="section('accueil')">Accueil</button>
-  <button onclick="section('matchs')">Matchs</button>
-  <button onclick="section('affiliation')">Parrainage</button>
-</nav>
-
 <main>
+<section class="panel">
+<h2>Bienvenue sur REMIX BET</h2>
+<p>Consulte les rencontres disponibles et prépare tes analyses à partir des informations réellement fournies par la source de données.</p>
 
-<section id="accueil" class="panel">
-  <h2>Bienvenue sur REMIX BET</h2>
-  <p>Retrouvez les rencontres de football disponibles et consultez leurs informations.</p>
-  <button onclick="section('matchs')">⚽ Voir les matchs</button>
-  <button class="yellow" onclick="section('affiliation')">🤝 Rejoindre REM1XBET</button>
+<div class="controls">
+<label>Date de début
+<input type="date" id="dateFrom">
+</label>
+<label>Date de fin
+<input type="date" id="dateTo">
+</label>
+<button id="loadButton" type="button">🔄 Charger les matchs</button>
+</div>
+
+<p class="small">Période maximale : 14 jours. Les rencontres affichées dépendent des compétitions accessibles avec la source de données.</p>
 </section>
 
-<section id="matchs" class="panel">
-  <h2>⚽ Matchs de football</h2>
-  <p>Choisissez une date pour rechercher les rencontres.</p>
-  <label for="dateMatch">Date des rencontres :</label>
-  <input type="date" id="dateMatch">
-  <button onclick="chargerMatchs()">🔄 Charger les matchs</button>
-  <div id="message" class="notice">
-    Appuyez sur « Charger les matchs ».
-  </div>
-  <div id="matches"></div>
+<section id="matches" aria-live="polite">
+<div id="message">Choisis une période puis appuie sur « Charger les matchs ».</div>
 </section>
-
-<section id="affiliation" class="panel hidden">
-  <h2>🤝 Rejoignez REM1XBET</h2>
-  <p>Bienvenue dans notre réseau de partenaires en RDC.</p>
-  <div class="notice">
-    <strong>Votre code promotionnel :</strong>
-    <h1 style="color:#003399">REM1XBET</h1>
-    Partagez ce code avec les personnes intéressées.
-  </div>
-  <button onclick="copierCode()">📋 Copier REM1XBET</button>
-  <a class="cta yellow"
-     href="https://remixntambue8.wixsite.com/mysite"
-     target="_blank" rel="noopener">
-     Visiter notre espace partenaire
-  </a>
-  <p class="meta">
-    Les inscriptions et avantages éventuels dépendent des conditions
-    officielles du partenaire et de votre éligibilité.
-  </p>
-</section>
-
-<section id="analyse" class="analysis hidden">
-  <h2>📊 Fiche du match</h2>
-  <div id="detailsAnalyse"></div>
-  <button onclick="section('matchs')">⬅ Retour aux matchs</button>
-</section>
-
 </main>
 
-<footer>
-  <strong>REMIX BET © 2026</strong>
-  <p>Football • Analyses • Communauté</p>
-  <p>Les analyses ne garantissent aucun résultat sportif.</p>
-</footer>
+<footer>REMIX BET © 2026</footer>
 
 <script>
-const WORKER_URL =
-  "https://remix-bet.remixntambue8.workers.dev/";
+const API_BASE = "https://remix-bet.remixntambue8.workers.dev";
 
-const $ = id => document.getElementById(id);
+const fromInput = document.getElementById("dateFrom");
+const toInput = document.getElementById("dateTo");
+const loadButton = document.getElementById("loadButton");
+const zone = document.getElementById("matches");
 
-function dateKinshasa(){
-  const parts = new Intl.DateTimeFormat("en-CA",{
-    timeZone:"Africa/Kinshasa",
-    year:"numeric",month:"2-digit",day:"2-digit"
-  }).formatToParts(new Date());
-  const get = type => parts.find(p=>p.type===type).value;
-  return `${get("year")}-${get("month")}-${get("day")}`;
+function localDateString(date) {
+const y = date.getFullYear();
+const m = String(date.getMonth()+1).padStart(2,"0");
+const d = String(date.getDate()).padStart(2,"0");
+return `${y}-${m}-${d}`;
 }
 
-$("dateMatch").value = dateKinshasa();
+const today = new Date();
+const later = new Date(today);
+later.setDate(later.getDate()+6);
 
-function section(id){
-  ["accueil","matchs","affiliation","analyse"].forEach(x=>{
-    $(x).classList.toggle("hidden",x!==id);
-  });
-  window.scrollTo({top:0,behavior:"smooth"});
+fromInput.value = localDateString(today);
+toInput.value = localDateString(later);
+fromInput.max = localDateString(later);
+toInput.max = localDateString(new Date(today.getFullYear(),today.getMonth(),today.getDate()+13));
+
+function showMessage(message) {
+zone.replaceChildren();
+const p = document.createElement("div");
+p.id = "message";
+p.textContent = message;
+zone.appendChild(p);
 }
 
-function escapeHTML(value){
-  return String(value ?? "").replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",
-    '"':"&quot;","'":"&#39;"
-  })[c]);
+function displayDate(value) {
+if (!value) return "Horaire non communiqué";
+const date = new Date(value);
+if (Number.isNaN(date.getTime())) return "Horaire non communiqué";
+return new Intl.DateTimeFormat("fr-FR",{
+dateStyle:"medium",
+timeStyle:"short"
+}).format(date);
 }
 
-function heure(date){
-  if(!date)return "Horaire non disponible";
-  return new Intl.DateTimeFormat("fr-FR",{
-    timeZone:"Africa/Kinshasa",
-    dateStyle:"short",timeStyle:"short"
-  }).format(new Date(date));
+function addText(parent, tag, className, value) {
+const el = document.createElement(tag);
+if (className) el.className = className;
+el.textContent = value || "Non communiqué";
+parent.appendChild(el);
+return el;
 }
 
-function libelleStatut(status){
-  const labels={
-    SCHEDULED:"Programmé",
-    TIMED:"Horaire fixé",
-    IN_PLAY:"En cours",
-    PAUSED:"Pause",
-    FINISHED:"Terminé",
-    POSTPONED:"Reporté",
-    CANCELLED:"Annulé",
-    SUSPENDED:"Suspendu"
-  };
-  return labels[status] || status || "Statut inconnu";
+function afficherMatch(match) {
+const card = document.createElement("article");
+card.className = "match";
+
+addText(card,"div","competition",
+match.competition?.name || "Compétition non précisée");
+
+const home = match.homeTeam?.name ||
+match.homeTeam?.shortName || "Équipe domicile";
+
+const away = match.awayTeam?.name ||
+match.awayTeam?.shortName || "Équipe extérieure";
+
+addText(card,"div","teams",`⚽ ${home} — ${away}`);
+
+const score = match.score?.fullTime;
+
+if (score && (score.home !== null || score.away !== null)) {
+addText(card,"div","score",
+`Score : ${score.home ?? "—"} - ${score.away ?? "—"}`);
 }
 
-let matchsActuels=[];
+addText(card,"div","meta",`📅 ${displayDate(match.utcDate)}`);
+addText(card,"div","meta",`État : ${match.status || "Non communiqué"}`);
 
-async function chargerMatchs(){
-  const date=$("dateMatch").value;
-  if(!date){
-    $("message").textContent="Choisissez une date.";
-    return;
-  }
-
-  $("matches").innerHTML="";
-  $("message").textContent="⏳ Recherche des matchs en cours...";
-
-  try{
-    const url=new URL(WORKER_URL);
-    url.searchParams.set("dateFrom",date);
-    url.searchParams.set("dateTo",date);
-
-    const response=await fetch(url.toString(),{
-      method:"GET",
-      headers:{"Accept":"application/json"}
-    });
-
-    const data=await response.json();
-
-    if(!response.ok){
-      throw new Error(data.error ||
-        "Erreur du serveur ("+response.status+")");
-    }
-
-    if(!Array.isArray(data.matches)){
-      throw new Error("Réponse Football-Data incorrecte.");
-    }
-
-    matchsActuels=data.matches;
-
-    if(!matchsActuels.length){
-      $("message").textContent=
-        "Aucun match disponible pour cette date dans les compétitions autorisées par votre clé API. Essayez une autre date.";
-      return;
-    }
-
-    $("message").textContent=
-      matchsActuels.length+" rencontre(s) trouvée(s).";
-
-    $("matches").innerHTML=matchsActuels.map((m,i)=>{
-      const home=m.homeTeam?.name || "Équipe domicile";
-      const away=m.awayTeam?.name || "Équipe extérieure";
-      const competition=m.competition?.name || "Compétition";
-      const score=m.score?.fullTime;
-      const scoreText=score &&
-        score.home!==null && score.away!==null
-        ? `${score.home} - ${score.away}` : "";
-
-      return `
-      <article class="match">
-        <span class="status">${escapeHTML(libelleStatut(m.status))}</span>
-        <div class="meta">
-          🏆 ${escapeHTML(competition)}<br>
-          📅 ${escapeHTML(heure(m.utcDate))}
-        </div>
-        <div class="teams">
-          ${escapeHTML(home)}<br>
-          ${scoreText ? escapeHTML(scoreText) : "VS"}<br>
-          ${escapeHTML(away)}
-        </div>
-        <button onclick="analyserMatch(${i})">
-          📊 Voir la fiche
-        </button>
-      </article>`;
-    }).join("");
-
-  }catch(error){
-    console.error(error);
-    $("message").textContent=
-      "❌ "+error.message+
-      " Vérifiez le Worker Cloudflare et sa clé API.";
-  }
+if (match.matchday) {
+addText(card,"div","meta",`Journée : ${match.matchday}`);
 }
 
-function analyserMatch(index){
-  const m=matchsActuels[index];
-  if(!m)return;
+const details = document.createElement("p");
+details.className = "small";
+details.textContent = "Informations affichées selon les données disponibles. Aucune prédiction ou statistique n’est inventée.";
+card.appendChild(details);
 
-  const score=m.score?.fullTime;
-  const resultat=score &&
-    score.home!==null && score.away!==null
-    ? `${score.home} - ${score.away}`
-    : "Pas encore de score final";
-
-  $("detailsAnalyse").innerHTML=`
-    <h3>${escapeHTML(m.homeTeam?.name)} — 
-    ${escapeHTML(m.awayTeam?.name)}</h3>
-    <p><strong>Compétition :</strong>
-    ${escapeHTML(m.competition?.name)}</p>
-    <p><strong>Date :</strong> ${escapeHTML(heure(m.utcDate))}</p>
-    <p><strong>Statut :</strong>
-    ${escapeHTML(libelleStatut(m.status))}</p>
-    <p><strong>Score :</strong> ${escapeHTML(resultat)}</p>
-    <div class="notice">
-      Cette fiche présente les données officielles du match
-      disponibles auprès de Football-Data.
-      Les statistiques détaillées des équipes et les probabilités
-      ne sont pas fournies par cette version de l'API.
-      Aucune prédiction n'est inventée.
-    </div>
-  `;
-  section("analyse");
+zone.appendChild(card);
 }
 
-async function copierCode(){
-  try{
-    await navigator.clipboard.writeText("REM1XBET");
-    alert("Code REM1XBET copié !");
-  }catch(e){
-    alert("Votre code promotionnel : REM1XBET");
-  }
+async function chargerMatchs() {
+const from = fromInput.value;
+const to = toInput.value;
+
+if (!from || !to) {
+showMessage("Choisis une date de début et une date de fin.");
+return;
 }
+
+if (to < from) {
+showMessage("La date de fin doit être égale ou postérieure à la date de début.");
+return;
+}
+
+const days = (
+Date.parse(to+"T00:00:00Z") -
+Date.parse(from+"T00:00:00Z")
+) / 86400000;
+
+if (days > 13) {
+showMessage("Choisis une période de 14 jours maximum.");
+return;
+}
+
+loadButton.disabled = true;
+loadButton.textContent = "Chargement…";
+showMessage("🔄 Chargement des rencontres…");
+
+try {
+const url = new URL(API_BASE);
+url.searchParams.set("dateFrom",from);
+url.searchParams.set("dateTo",to);
+
+const response = await fetch(url.toString(),{
+method:"GET",
+headers:{Accept:"application/json"}
+});
+
+const data = await response.json().catch(()=>({}));
+
+if (!response.ok) {
+const detail = data.message || data.error ||
+`Erreur serveur (${response.status})`;
+throw new Error(detail);
+}
+
+const matchs = Array.isArray(data.matches) ? data.matches : [];
+
+zone.replaceChildren();
+
+if (matchs.length === 0) {
+showMessage("Aucun match disponible pour cette période avec les compétitions accessibles à la source de données. Essaie d’autres dates.");
+return;
+}
+
+const summary = document.createElement("div");
+summary.id = "message";
+summary.textContent = `${matchs.length} rencontre(s) trouvée(s) du ${from} au ${to}.`;
+zone.appendChild(summary);
+
+matchs.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
+matchs.forEach(afficherMatch);
+
+} catch (error) {
+console.error(error);
+showMessage(`Impossible de charger les matchs : ${error.message}. Vérifie que le serveur Cloudflare est disponible et que sa clé API est configurée.`);
+} finally {
+loadButton.disabled = false;
+loadButton.textContent = "🔄 Charger les matchs";
+}
+}
+
+loadButton.addEventListener("click",chargerMatchs);
 </script>
 </body>
 </html>
