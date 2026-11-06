@@ -1,304 +1,225 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffd400">
-<title>REMIX BET</title>
+<meta name="description" content="REMIX BET : rencontres de football, données disponibles et analyses informatives.">
+<title>REMIX BET — Football & analyses</title>
 <style>
-:root{--yellow:#ffd400;--blue:#003399}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f2f4f8;color:#172033}
-header{background:var(--yellow);color:var(--blue);padding:20px;text-align:center}
-header h1{margin:0;font-size:29px}
-header p{margin:7px 0;font-weight:bold}
-main{max-width:850px;margin:auto;padding:15px}
-.panel,.match{background:white;padding:17px;border-radius:13px;margin:13px 0;box-shadow:0 2px 9px #0001}
-h2{color:var(--blue);margin-top:0}
-input{width:100%;padding:13px;margin:7px 0 13px;border:1px solid #bbb;border-radius:8px;font-size:16px}
-button{background:var(--blue);color:white;border:0;padding:13px 16px;border-radius:8px;font-weight:bold;font-size:15px;cursor:pointer}
-button:disabled{opacity:.5}
-button.secondary{background:#555}
-nav{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
-nav button{flex:1;min-width:90px}
-.hidden{display:none!important}
-#message{background:#eef2ff;padding:12px;border-radius:8px;margin:10px 0}
-.match{border-left:5px solid var(--yellow)}
-.teams{font-weight:bold;font-size:18px;margin:10px 0}
-.meta{font-size:14px;color:#555;margin:6px 0}
-.competition{font-size:13px;color:#666}
-footer{text-align:center;padding:20px;color:#666;font-size:13px}
-a{color:var(--blue);font-weight:bold}
+:root{--yellow:#ffd400;--blue:#003399;--ink:#172033;--muted:#657084;--bg:#f2f4f8;--card:#fff;--line:#e4e8ef;--green:#137a43}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Arial,sans-serif;line-height:1.45}
+header{background:var(--yellow);color:var(--blue);padding:22px 14px;text-align:center}
+header h1{margin:0;font-size:clamp(25px,5vw,36px)}header p{margin:6px 0;font-weight:700}
+main{max-width:980px;margin:auto;padding:14px}.panel,.match{background:var(--card);padding:18px;border-radius:16px;margin:13px 0;box-shadow:0 3px 14px #15213a0d}
+h2,h3{color:var(--blue);margin-top:0}h2{font-size:23px}.muted,.meta{color:var(--muted);font-size:14px}
+label{display:block;font-weight:650;margin:10px 0 5px}input{width:100%;padding:13px;border:1px solid #cbd2dd;border-radius:10px;font:inherit;background:#fff;color:var(--ink)}
+button,.button{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:10px;padding:12px 16px;font:inherit;font-weight:750;text-align:center;text-decoration:none;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}.secondary{background:#555}.light{background:#edf2ff;color:var(--blue)}.danger{background:#9e2634}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}nav button{flex:1;min-width:100px}
+.hidden{display:none!important}.authbox{max-width:620px;margin:30px auto}.notice{background:#eef2ff;border-left:4px solid var(--blue);padding:12px;border-radius:9px;margin:12px 0}
+.error{color:#a32232}.success{color:var(--green)}.match{border-left:5px solid var(--yellow)}.competition{font-size:13px;color:var(--muted);font-weight:700}
+.teams{font-size:18px;font-weight:800;margin:9px 0}.score{font-size:22px;font-weight:850;color:var(--blue)}
+.match-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.match-actions button{padding:9px 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}.stat{background:#f6f8fc;padding:12px;border-radius:10px}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:13px}
+a{color:var(--blue);font-weight:700}.pill{display:inline-block;background:#eef2ff;color:var(--blue);border-radius:20px;padding:4px 9px;font-size:12px;font-weight:750}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:130px}.topline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:520px){main{padding:10px}.panel,.match{padding:15px}nav button{min-width:28%;padding:11px 8px;font-size:14px}}
 </style>
 </head>
 <body>
-
 <header>
-<h1>⚽ REMIX BET</h1>
-<p>ANALYSES • STATISTIQUES • SÉLECTIONS</p>
-<p>Construisons nos opportunités ensemble</p>
+<h1 id="brandTitle">⚽ REMIX BET</h1>
+<p id="brandSubtitle">ANALYSES • STATISTIQUES • SÉLECTIONS</p>
+<p id="brandSlogan">Construisons nos opportunités ensemble</p>
 </header>
-
 <main>
-
-<section id="auth" class="panel">
+<section id="auth" class="panel authbox">
 <h2 id="authTitle">Bienvenue sur REMIX BET</h2>
-<p>Crée ton compte ou connecte-toi pour accéder à l'application.</p>
-
-<div id="nameArea">
-<label>Nom complet</label>
-<input id="name" type="text" placeholder="Ton nom complet">
-</div>
-
-<label>Adresse e-mail</label>
-<input id="email" type="email" placeholder="Adresse e-mail" autocomplete="email">
-
-<label>Mot de passe</label>
-<input id="password" type="password" placeholder="Minimum 6 caractères" autocomplete="current-password">
-
+<p>Crée ton compte ou connecte-toi pour accéder à ton espace.</p>
+<div id="nameArea"><label for="name">Nom complet</label><input id="name" autocomplete="name" placeholder="Ton nom complet"></div>
+<label for="email">Adresse e-mail</label><input id="email" type="email" autocomplete="email" placeholder="Adresse e-mail">
+<label for="password">Mot de passe</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Minimum 6 caractères">
 <button id="authButton" style="width:100%">Créer mon compte</button>
-<p id="authMessage" role="status"></p>
-<p id="switchText">
-Déjà inscrit ?
-<a href="#" id="switchMode">Se connecter</a>
-</p>
+<p id="authMessage" role="status" aria-live="polite"></p>
+<p id="switchText">Déjà inscrit ? <a href="#" id="switchMode">Se connecter</a></p>
 </section>
 
 <section id="privateApp" class="hidden">
-<div class="panel">
-<p>Connecté : <strong id="userEmail"></strong></p>
-<button id="logout" class="secondary">Me déconnecter</button>
-</div>
-
-<nav>
-<button data-page="home">Accueil</button>
-<button data-page="matches">Matchs</button>
-<button data-page="referral">Parrainage</button>
+<div class="panel topline"><div>Connecté : <strong id="userLabel"></strong><div class="muted" id="roleLabel"></div></div><button id="logout" class="secondary">Me déconnecter</button></div>
+<nav aria-label="Navigation principale">
+<button data-page="home">Accueil</button><button data-page="matches">Matchs</button><button data-page="analysis">Analyses</button><button data-page="referral">Parrainage</button><button data-page="settings" id="settingsNav" class="hidden">Personnaliser</button>
 </nav>
 
 <section id="home" class="panel page">
-<h2>Bienvenue dans REMIX BET</h2>
-<p>Ton espace football pour consulter les rencontres disponibles et préparer tes analyses.</p>
-<p>Consulte les matchs et découvre notre programme de parrainage.</p>
+<h2>Bienvenue dans <span class="brandName">REMIX BET</span></h2>
+<p>Ton espace football pour consulter les rencontres disponibles et comprendre les informations publiées.</p>
+<div class="grid">
+<div class="stat"><strong>Matchs</strong><p class="muted">Consulte les rencontres accessibles au fournisseur.</p><button data-goto="matches">Voir les matchs</button></div>
+<div class="stat"><strong>Analyses</strong><p class="muted">Examine les informations réelles disponibles pour chaque rencontre.</p><button data-goto="analysis">Ouvrir les analyses</button></div>
+<div class="stat"><strong>Parrainage</strong><p class="muted">Partage ton code de présentation.</p><button data-goto="referral">Voir le parrainage</button></div>
+</div>
+<div class="notice">REMIX BET fournit des informations sportives à titre informatif. Aucun résultat n'est garanti. Joue de manière responsable et uniquement si tu as l'âge légal.</div>
 </section>
 
 <section id="matches" class="page hidden">
 <div class="panel">
 <h2>⚽ Matchs disponibles</h2>
-<label>Date de début</label>
-<input type="date" id="dateFrom">
-<label>Date de fin</label>
-<input type="date" id="dateTo">
+<div class="row"><div><label for="dateFrom">Date de début</label><input type="date" id="dateFrom"></div><div><label for="dateTo">Date de fin</label><input type="date" id="dateTo"></div></div>
 <button id="loadButton" style="width:100%">🔄 Charger les matchs</button>
-<p class="meta">Les rencontres dépendent des compétitions accessibles auprès de notre fournisseur de données.</p>
+<p class="muted">Les rencontres dépendent des compétitions accessibles auprès du fournisseur de données. Maximum 14 jours par recherche.</p>
 </div>
-<div id="matchesList" aria-live="polite">
-<div id="message">Choisis les dates puis charge les matchs.</div>
-</div>
+<div id="matchesList" aria-live="polite"><div class="notice">Choisis les dates puis charge les matchs.</div></div>
+</section>
+
+<section id="analysis" class="page hidden">
+<div class="panel"><h2>📊 Analyses REMIX BET</h2><p>Les analyses sont construites uniquement à partir des informations réellement renvoyées par le fournisseur. Choisis « Voir l'analyse » sur une rencontre.</p><div id="analysisContent" class="notice">Aucune rencontre sélectionnée. Charge les matchs puis ouvre une analyse.</div></div>
 </section>
 
 <section id="referral" class="panel page hidden">
-<h2>🤝 Parrainage REMIX BET</h2>
-<p>Partage REMIX BET avec tes amis et présente-leur notre espace de football.</p>
-<p><strong>Code de parrainage :</strong> REM1XBET</p>
-<p>Site de présentation :</p>
-<p><a href="https://remixntambue8.wixsite.com/mysite" target="_blank" rel="noopener">Visiter notre site de parrainage</a></p>
-</section>
+<h2>🤝 Parrainage <span class="brandName">REMIX BET</span></h2>
+<p>Partage notre espace football avec tes amis.</p>
+<p><strong>Code de présentation :</strong> <span id="referralCode">REM1XBET</span></p>
+<p><a id="referralLink" href="https://remixntambue8.wixsite.com/mysite" target="_blank" rel="noopener noreferrer">Visiter notre site de présentation</a></p>
+<button id="copyReferral" class="light">Copier le code</button>
 </section>
 
+<section id="settings" class="panel page hidden">
+<h2>🎨 Personnaliser REMIX BET</h2>
+<p>Modifie l'apparence et les informations de présentation. Les réglages ci-dessous sont enregistrés sur cet appareil et ce navigateur.</p>
+<label for="customTitle">Nom affiché</label><input id="customTitle" maxlength="35" value="REMIX BET">
+<label for="customSubtitle">Sous-titre</label><input id="customSubtitle" maxlength="90" value="ANALYSES • STATISTIQUES • SÉLECTIONS">
+<label for="customSlogan">Slogan</label><input id="customSlogan" maxlength="100" value="Construisons nos opportunités ensemble">
+<div class="row"><div><label for="customBlue">Couleur principale (bleu)</label><input id="customBlue" type="color" value="#003399"></div><div><label for="customYellow">Couleur secondaire (jaune)</label><input id="customYellow" type="color" value="#ffd400"></div></div>
+<label for="customReferral">Code de présentation</label><input id="customReferral" maxlength="30" value="REM1XBET">
+<label for="customLink">Lien de présentation</label><input id="customLink" type="url" value="https://remixntambue8.wixsite.com/mysite">
+<div class="row"><button id="saveBrand">Enregistrer la personnalisation</button><button id="resetBrand" class="secondary">Réinitialiser</button></div>
+<p id="settingsMessage" class="muted" role="status"></p>
+<div class="notice">Pour que les personnalisations soient visibles par tous les utilisateurs sur leurs téléphones, il faudra ensuite enregistrer ces paramètres dans une base de données sécurisée. Ici, ils sont locaux à cet appareil.</div>
+</section>
+</section>
 </main>
-<footer>REMIX BET © 2026</footer>
+<footer><span class="brandName">REMIX BET</span> © <span id="year"></span> — Informations sportives à titre informatif.</footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDA-sBU1fL_q16OmbhFXYLQgRFy2G4aJnU",
-  authDomain: "remix-bet-dce62.firebaseapp.com",
-  projectId: "remix-bet-dce62",
-  storageBucket: "remix-bet-dce62.firebasestorage.app",
-  messagingSenderId: "558528517854",
-  appId: "1:558528517854:web:b2bdddd541dae33438d44f",
-  measurementId: "G-LBLFV7MWYR"
-};
-
+"use strict";
+const firebaseConfig={apiKey:"AIzaSyDA-sBU1fL_q16OmbhFXYLQgRFy2G4aJnU",authDomain:"remix-bet-dce62.firebaseapp.com",projectId:"remix-bet-dce62",storageBucket:"remix-bet-dce62.firebasestorage.app",messagingSenderId:"558528517854",appId:"1:558528517854:web:b2bdddd541dae33438d44f",measurementId:"G-LBLFV7MWYR"};
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+const auth=firebase.auth();
+const ADMIN_EMAIL="remixntambue8@gmail.com";
+const $=id=>document.getElementById(id);
+let creating=true, selectedMatch=null, cachedMatches=[];
+const authSection=$("auth"), privateApp=$("privateApp"), authButton=$("authButton"), authMessage=$("authMessage"), nameArea=$("nameArea");
 
-const authSection = document.getElementById("auth");
-const privateApp = document.getElementById("privateApp");
-const authTitle = document.getElementById("authTitle");
-const authButton = document.getElementById("authButton");
-const authMessage = document.getElementById("authMessage");
-const nameArea = document.getElementById("nameArea");
-let creating = true;
-
-document.getElementById("switchMode").onclick = e => {
-  e.preventDefault();
-  creating = !creating;
-  authTitle.textContent = creating ? "Créer mon compte" : "Connexion";
-  authButton.textContent = creating ? "Créer mon compte" : "Me connecter";
-  nameArea.classList.toggle("hidden",!creating);
-  document.getElementById("switchText").innerHTML = creating
-    ? 'Déjà inscrit ? <a href="#" id="switchMode">Se connecter</a>'
-    : 'Pas encore de compte ? <a href="#" id="switchMode">Créer un compte</a>';
-  document.getElementById("switchMode").onclick = arguments.callee;
-  authMessage.textContent = "";
-};
-
-authButton.onclick = async () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const name = document.getElementById("name").value.trim();
-
-  if (!email || !password || (creating && !name)) {
-    authMessage.textContent = "Remplis tous les champs demandés.";
-    return;
-  }
-  if (password.length < 6) {
-    authMessage.textContent = "Le mot de passe doit contenir au moins 6 caractères.";
-    return;
-  }
-
-  authButton.disabled = true;
-  authMessage.textContent = "Patiente un instant...";
-
-  try {
-    if (creating) {
-      const result = await auth.createUserWithEmailAndPassword(email,password);
-      await result.user.updateProfile({displayName:name});
-    } else {
-      await auth.signInWithEmailAndPassword(email,password);
-    }
-  } catch(error) {
-    const messages = {
-      "auth/email-already-in-use":"Cette adresse possède déjà un compte. Connecte-toi.",
-      "auth/invalid-email":"Adresse e-mail invalide.",
-      "auth/weak-password":"Mot de passe trop faible.",
-      "auth/user-not-found":"Aucun compte trouvé avec cette adresse.",
-      "auth/wrong-password":"Mot de passe incorrect.",
-      "auth/invalid-credential":"Adresse e-mail ou mot de passe incorrect.",
-      "auth/too-many-requests":"Trop de tentatives. Réessaie plus tard."
-    };
-    authMessage.textContent = messages[error.code] || "Erreur : " + error.message;
-  } finally {
-    authButton.disabled = false;
-  }
-};
-
-auth.onAuthStateChanged(user => {
-  if(user) {
-    authSection.classList.add("hidden");
-    privateApp.classList.remove("hidden");
-    document.getElementById("userEmail").textContent =
-      user.displayName ? user.displayName + " — " + user.email : user.email;
-    showPage("home");
-  } else {
-    privateApp.classList.add("hidden");
-    authSection.classList.remove("hidden");
-  }
+function setAuthMode(register){
+ creating=register;
+ $("authTitle").textContent=register?"Bienvenue sur REMIX BET":"Connexion à REMIX BET";
+ authButton.textContent=register?"Créer mon compte":"Me connecter";
+ nameArea.classList.toggle("hidden",!register);
+ $("switchText").innerHTML=register?'Déjà inscrit ? <a href="#" id="switchMode">Se connecter</a>':'Pas encore de compte ? <a href="#" id="switchMode">Créer un compte</a>';
+ $("switchMode").addEventListener("click",e=>{e.preventDefault();setAuthMode(!creating)});
+ authMessage.textContent="";
+}
+$("switchMode").addEventListener("click",e=>{e.preventDefault();setAuthMode(false)});
+authButton.addEventListener("click",async()=>{
+ const email=$("email").value.trim(),password=$("password").value,name=$("name").value.trim();
+ if(!email||!password||(creating&&!name)){authMessage.textContent="Remplis tous les champs demandés.";return}
+ if(password.length<6){authMessage.textContent="Le mot de passe doit contenir au moins 6 caractères.";return}
+ authButton.disabled=true;authMessage.textContent="Connexion en cours...";
+ try{
+  if(creating){const result=await auth.createUserWithEmailAndPassword(email,password);await result.user.updateProfile({displayName:name})}
+  else await auth.signInWithEmailAndPassword(email,password);
+ }catch(error){
+  const errors={"auth/email-already-in-use":"Cette adresse possède déjà un compte. Connecte-toi.","auth/invalid-email":"Adresse e-mail invalide.","auth/weak-password":"Mot de passe trop faible.","auth/user-not-found":"Aucun compte trouvé avec cette adresse.","auth/wrong-password":"Mot de passe incorrect.","auth/invalid-credential":"Adresse e-mail ou mot de passe incorrect.","auth/too-many-requests":"Trop de tentatives. Réessaie plus tard.","auth/network-request-failed":"Connexion Internet indisponible."};
+  authMessage.textContent=errors[error.code]||"Erreur : "+error.message;
+ }finally{authButton.disabled=false}
 });
-
-document.getElementById("logout").onclick = () => auth.signOut();
-
-function showPage(page) {
-  document.querySelectorAll(".page").forEach(el => el.classList.add("hidden"));
-  document.getElementById(page).classList.remove("hidden");
-}
-document.querySelectorAll("nav button").forEach(button => {
-  button.onclick = () => showPage(button.dataset.page);
+auth.onAuthStateChanged(user=>{
+ if(user){authSection.classList.add("hidden");privateApp.classList.remove("hidden");$("userLabel").textContent=(user.displayName?user.displayName+" — ":"")+user.email;const admin=user.email.toLowerCase()===ADMIN_EMAIL;$("settingsNav").classList.toggle("hidden",!admin);$("roleLabel").textContent=admin?"Administrateur":"Membre";applyBrand();showPage("home")}
+ else{privateApp.classList.add("hidden");authSection.classList.remove("hidden")}
 });
+$("logout").addEventListener("click",()=>auth.signOut());
+function showPage(page){document.querySelectorAll(".page").forEach(el=>el.classList.add("hidden"));$(page).classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll("nav button[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.goto)));
 
-/* CHARGEMENT DES MATCHS */
-const API_BASE = "https://remix-bet.remixntambue8.workers.dev";
-const fromInput = document.getElementById("dateFrom");
-const toInput = document.getElementById("dateTo");
-const loadButton = document.getElementById("loadButton");
-const zone = document.getElementById("matchesList");
-
-function dateString(date) {
-  return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");
+const API_BASE="https://remix-bet.remixntambue8.workers.dev";
+const fromInput=$("dateFrom"),toInput=$("dateTo"),loadButton=$("loadButton"),zone=$("matchesList");
+function dateString(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+const today=new Date(),end=new Date(today);end.setDate(end.getDate()+6);fromInput.value=dateString(today);toInput.value=dateString(end);
+function message(text){zone.replaceChildren();const p=document.createElement("div");p.className="notice";p.textContent=text;zone.appendChild(p)}
+function addText(parent,tag,cls,value){const el=document.createElement(tag);el.className=cls;el.textContent=value??"Non communiqué";parent.appendChild(el);return el}
+function displayDate(value){if(!value)return"Horaire non communiqué";const d=new Date(value);return Number.isNaN(d.getTime())?"Horaire non communiqué":new Intl.DateTimeFormat("fr-FR",{dateStyle:"medium",timeStyle:"short"}).format(d)}
+function teamName(team,fallback){return team?.name||fallback}
+function analyseMatch(m){
+ const status=m.status||"UNKNOWN",score=m.score?.fullTime;
+ const home=teamName(m.homeTeam,"Équipe domicile"),away=teamName(m.awayTeam,"Équipe extérieure");
+ let facts=[];
+ if(score&&(score.home!==null||score.away!==null))facts.push("Score disponible : "+(score.home??"—")+" - "+(score.away??"—")+".");
+ if(status==="FINISHED")facts.push("La rencontre est terminée selon le fournisseur.");
+ else if(status==="IN_PLAY"||status==="PAUSED")facts.push("La rencontre est en cours ou en pause. Le score peut évoluer.");
+ else facts.push("La rencontre n'est pas indiquée comme terminée.");
+ if(m.competition?.name)facts.push("Compétition : "+m.competition.name+".");
+ facts.push("Les statistiques détaillées (tirs, possession, forme récente) ne sont pas fournies par ce flux. Aucun pronostic chiffré fiable ne peut donc être calculé à partir de ces seules données.");
+ return {title:home+" — "+away,facts,status};
 }
-const today = new Date();
-const later = new Date(today);
-later.setDate(later.getDate()+6);
-fromInput.value = dateString(today);
-toInput.value = dateString(later);
-
-function showMessage(message) {
-  zone.innerHTML = "";
-  const p = document.createElement("div");
-  p.id = "message";
-  p.textContent = message;
-  zone.appendChild(p);
+function openAnalysis(m){
+ selectedMatch=m;const a=analyseMatch(m),box=$("analysisContent");box.replaceChildren();
+ addText(box,"h3","",a.title);addText(box,"div","pill",a.status);
+ a.facts.forEach(t=>addText(box,"p","",t));
+ const note=document.createElement("p");note.className="notice";note.textContent="REMIX BET ne garantit aucun résultat. Cette fiche décrit les données reçues et ne constitue pas un conseil de pari.";box.appendChild(note);
+ showPage("analysis");
 }
-function addText(parent,tag,className,value) {
-  const el = document.createElement(tag);
-  el.className = className;
-  el.textContent = value || "Non communiqué";
-  parent.appendChild(el);
+function displayMatch(m){
+ const card=document.createElement("article");card.className="match";
+ addText(card,"div","competition",m.competition?.name||"Compétition non précisée");
+ addText(card,"div","teams","⚽ "+teamName(m.homeTeam,"Équipe domicile")+" — "+teamName(m.awayTeam,"Équipe extérieure"));
+ const s=m.score?.fullTime;if(s&&(s.home!==null||s.away!==null))addText(card,"div","score",(s.home??"—")+" - "+(s.away??"—"));
+ addText(card,"div","meta","📅 "+displayDate(m.utcDate));addText(card,"div","meta","État : "+(m.status||"Non communiqué"));
+ const actions=document.createElement("div");actions.className="match-actions";const b=document.createElement("button");b.textContent="Voir l'analyse";b.addEventListener("click",()=>openAnalysis(m));actions.appendChild(b);card.appendChild(actions);zone.appendChild(card);
 }
-function displayDate(value) {
-  if(!value) return "Horaire non communiqué";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Horaire non communiqué" :
-    new Intl.DateTimeFormat("fr-FR",{dateStyle:"medium",timeStyle:"short"}).format(date);
+async function chargerMatchs(){
+ const from=fromInput.value,to=toInput.value;
+ if(!from||!to||to<from){message("Vérifie les dates choisies.");return}
+ const days=(Date.parse(to+"T00:00:00Z")-Date.parse(from+"T00:00:00Z"))/86400000;
+ if(days>13){message("Choisis une période de 14 jours maximum.");return}
+ loadButton.disabled=true;loadButton.textContent="Chargement...";message("Chargement des rencontres...");
+ try{
+  const url=new URL(API_BASE);url.searchParams.set("dateFrom",from);url.searchParams.set("dateTo",to);
+  const response=await fetch(url,{headers:{Accept:"application/json"}});let data;
+  try{data=await response.json()}catch{throw new Error("Réponse illisible du serveur")}
+  if(!response.ok)throw new Error(data.message||data.error||"Erreur serveur ("+response.status+")");
+  const matches=Array.isArray(data.matches)?data.matches:[];
+  cachedMatches=matches;zone.replaceChildren();
+  if(!matches.length){message("Aucun match disponible pour cette période. Essaie d'autres dates.");return}
+  addText(zone,"div","panel",matches.length+" rencontre(s) trouvée(s).");
+  matches.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));matches.forEach(displayMatch);
+ }catch(e){message("Impossible de charger les matchs : "+e.message)}
+ finally{loadButton.disabled=false;loadButton.textContent="🔄 Charger les matchs"}
 }
-function afficherMatch(match) {
-  const card = document.createElement("article");
-  card.className = "match";
-  addText(card,"div","competition",match.competition?.name || "Compétition non précisée");
-  addText(card,"div","teams","⚽ "+(match.homeTeam?.name || "Équipe domicile")+" — "+(match.awayTeam?.name || "Équipe extérieure"));
-  const score = match.score?.fullTime;
-  if(score && (score.home !== null || score.away !== null)) {
-    addText(card,"div","meta","Score : "+(score.home ?? "—")+" - "+(score.away ?? "—"));
-  }
-  addText(card,"div","meta","📅 "+displayDate(match.utcDate));
-  addText(card,"div","meta","État : "+(match.status || "Non communiqué"));
-  addText(card,"div","meta","Les informations affichées proviennent des données disponibles.");
-  zone.appendChild(card);
+loadButton.addEventListener("click",chargerMatchs);
+$("copyReferral").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("referralCode").textContent);$("copyReferral").textContent="Code copié !"}catch{$("copyReferral").textContent="Copie non disponible"}});
+const BRAND_KEY="remixbet_brand_v1";
+function defaults(){return{title:"REMIX BET",subtitle:"ANALYSES • STATISTIQUES • SÉLECTIONS",slogan:"Construisons nos opportunités ensemble",blue:"#003399",yellow:"#ffd400",code:"REM1XBET",link:"https://remixntambue8.wixsite.com/mysite"}}
+function getBrand(){try{return {...defaults(),...JSON.parse(localStorage.getItem(BRAND_KEY)||"{}")}}catch{return defaults()}}
+function applyBrand(){
+ const b=getBrand();document.documentElement.style.setProperty("--blue",b.blue);document.documentElement.style.setProperty("--yellow",b.yellow);
+ $("brandTitle").textContent="⚽ "+b.title;$("brandSubtitle").textContent=b.subtitle;$("brandSlogan").textContent=b.slogan;
+ document.querySelectorAll(".brandName").forEach(x=>x.textContent=b.title);$("referralCode").textContent=b.code;
+ if(/^https:\/\/|^http:\/\//i.test(b.link)){$("referralLink").href=b.link}else $("referralLink").href="#";
+ $("customTitle").value=b.title;$("customSubtitle").value=b.subtitle;$("customSlogan").value=b.slogan;$("customBlue").value=b.blue;$("customYellow").value=b.yellow;$("customReferral").value=b.code;$("customLink").value=b.link;
 }
-async function chargerMatchs() {
-  const from = fromInput.value;
-  const to = toInput.value;
-  if(!from || !to || to < from) {
-    showMessage("Vérifie les dates choisies.");
-    return;
-  }
-  const days = (Date.parse(to+"T00:00:00Z")-Date.parse(from+"T00:00:00Z"))/86400000;
-  if(days > 13) {
-    showMessage("Choisis une période de 14 jours maximum.");
-    return;
-  }
-  loadButton.disabled = true;
-  loadButton.textContent = "Chargement...";
-  showMessage("Chargement des rencontres...");
-  try {
-    const url = new URL(API_BASE);
-    url.searchParams.set("dateFrom",from);
-    url.searchParams.set("dateTo",to);
-    const response = await fetch(url);
-    const data = await response.json();
-    if(!response.ok) throw new Error(data.message || data.error || "Erreur serveur");
-    const matches = Array.isArray(data.matches) ? data.matches : [];
-    zone.innerHTML = "";
-    if(matches.length === 0) {
-      showMessage("Aucun match disponible pour cette période. Essaie d'autres dates.");
-      return;
-    }
-    addText(zone,"div","panel",matches.length+" rencontre(s) trouvée(s).");
-    matches.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
-    matches.forEach(afficherMatch);
-  } catch(error) {
-    showMessage("Impossible de charger les matchs : "+error.message);
-  } finally {
-    loadButton.disabled = false;
-    loadButton.textContent = "🔄 Charger les matchs";
-  }
-}
-loadButton.onclick = chargerMatchs;
+$("saveBrand").addEventListener("click",()=>{
+ const user=auth.currentUser;if(!user||user.email.toLowerCase()!==ADMIN_EMAIL){$("settingsMessage").textContent="Accès administrateur requis.";return}
+ const link=$("customLink").value.trim();if(link&&!/^https?:\/\//i.test(link)){$("settingsMessage").textContent="Le lien doit commencer par https://";return}
+ const b={title:$("customTitle").value.trim()||"REMIX BET",subtitle:$("customSubtitle").value.trim(),slogan:$("customSlogan").value.trim(),blue:$("customBlue").value,yellow:$("customYellow").value,code:$("customReferral").value.trim()||"REM1XBET",link};
+ localStorage.setItem(BRAND_KEY,JSON.stringify(b));applyBrand();$("settingsMessage").textContent="Personnalisation enregistrée sur cet appareil.";
+});
+$("resetBrand").addEventListener("click",()=>{localStorage.removeItem(BRAND_KEY);applyBrand();$("settingsMessage").textContent="Présentation par défaut restaurée."});
+$("year").textContent=new Date().getFullYear();
 </script>
 </body>
 </html>
