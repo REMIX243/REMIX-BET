@@ -71,7 +71,9 @@ a{color:var(--blue);font-weight:700}.pill{display:inline-block;background:#eef2f
 <p class="muted">Les rencontres dépendent des compétitions accessibles auprès du fournisseur de données. Maximum 14 jours par recherche.</p>
 </div>
 <div id="matchesList" aria-live="polite"><div class="notice">Choisis les dates puis charge les matchs.</div></div>
- </section><section id="analysis" class="page hidden">
+</section>
+
+<section id="analysis" class="page hidden">
 <div class="panel"><h2>📊 Analyses REMIX BET</h2><p>Les analyses sont construites uniquement à partir des informations réellement renvoyées par le fournisseur. Choisis « Voir l'analyse » sur une rencontre.</p><div id="analysisContent" class="notice">Aucune rencontre sélectionnée. Charge les matchs puis ouvre une analyse.</div></div>
 </section>
 
@@ -136,7 +138,17 @@ authButton.addEventListener("click",async()=>{
   authMessage.textContent=errors[error.code]||"Erreur : "+error.message;
  }finally{authButton.disabled=false}
 });
-auth.onAuthStateChanged(user=>{const fromInput=$("dateFrom"),toInput=$("dateTo"),loadButton=$("loadButton"),zone=$("matchesList");
+auth.onAuthStateChanged(user=>{
+ if(user){authSection.classList.add("hidden");privateApp.classList.remove("hidden");$("userLabel").textContent=(user.displayName?user.displayName+" — ":"")+user.email;const admin=user.email.toLowerCase()===ADMIN_EMAIL;$("settingsNav").classList.toggle("hidden",!admin);$("roleLabel").textContent=admin?"Administrateur":"Membre";applyBrand();showPage("home")}
+ else{privateApp.classList.add("hidden");authSection.classList.remove("hidden")}
+});
+$("logout").addEventListener("click",()=>auth.signOut());
+function showPage(page){document.querySelectorAll(".page").forEach(el=>el.classList.add("hidden"));$(page).classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll("nav button[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.goto)));
+
+const API_BASE="https://remix-bet.remixntambue8.workers.dev";
+const fromInput=$("dateFrom"),toInput=$("dateTo"),loadButton=$("loadButton"),zone=$("matchesList");
 function dateString(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 const today=new Date(),end=new Date(today);end.setDate(end.getDate()+6);fromInput.value=dateString(today);toInput.value=dateString(end);
 function message(text){zone.replaceChildren();const p=document.createElement("div");p.className="notice";p.textContent=text;zone.appendChild(p)}
@@ -211,13 +223,4 @@ $("resetBrand").addEventListener("click",()=>{localStorage.removeItem(BRAND_KEY)
 $("year").textContent=new Date().getFullYear();
 </script>
 </body>
-</html>
- if(user){authSection.classList.add("hidden");privateApp.classList.remove("hidden");$("userLabel").textContent=(user.displayName?user.displayName+" — ":"")+user.email;const admin=user.email.toLowerCase()===ADMIN_EMAIL;$("settingsNav").classList.toggle("hidden",!admin);$("roleLabel").textContent=admin?"Administrateur":"Membre";applyBrand();showPage("home")}
- else{privateApp.classList.add("hidden");authSection.classList.remove("hidden")}
-});
-$("logout").addEventListener("click",()=>auth.signOut());
-function showPage(page){document.querySelectorAll(".page").forEach(el=>el.classList.add("hidden"));$(page).classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}
-document.querySelectorAll("nav button[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
-document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.goto)));
-
-const API_BASE="https://remix-bet.remixntambue8.workers.dev";
+                                              </html>
