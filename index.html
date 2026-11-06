@@ -3,227 +3,302 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffd400">
 <title>REMIX BET</title>
 <style>
-:root{--yellow:#ffd400;--blue:#003399;--ink:#172033;--muted:#667085;--bg:#f3f5f9}
+:root{--yellow:#ffd400;--blue:#003399}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
-header{background:var(--yellow);color:var(--blue);text-align:center;padding:22px 14px}
-header h1{margin:0;font-size:30px}
-header p{margin:7px 0 0;font-weight:600}
-main{max-width:900px;margin:0 auto;padding:18px}
-.panel,.match{background:#fff;border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 3px 12px #17203312}
-h2{margin:0 0 8px;color:var(--blue)}
-p{line-height:1.45}
-.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:14px}
-label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px}
-input{padding:11px;border:1px solid #cbd2df;border-radius:8px;font:inherit}
-button{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:12px 16px;font-size:15px;font-weight:700;cursor:pointer}
-button:disabled{opacity:.55;cursor:wait}
-#message{padding:12px;border-radius:9px;background:#f1f4fb;color:#344054}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f4f8;color:#172033}
+header{background:var(--yellow);color:var(--blue);padding:20px;text-align:center}
+header h1{margin:0;font-size:29px}
+header p{margin:7px 0;font-weight:bold}
+main{max-width:850px;margin:auto;padding:15px}
+.panel,.match{background:white;padding:17px;border-radius:13px;margin:13px 0;box-shadow:0 2px 9px #0001}
+h2{color:var(--blue);margin-top:0}
+input{width:100%;padding:13px;margin:7px 0 13px;border:1px solid #bbb;border-radius:8px;font-size:16px}
+button{background:var(--blue);color:white;border:0;padding:13px 16px;border-radius:8px;font-weight:bold;font-size:15px;cursor:pointer}
+button:disabled{opacity:.5}
+button.secondary{background:#555}
+nav{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+nav button{flex:1;min-width:90px}
+.hidden{display:none!important}
+#message{background:#eef2ff;padding:12px;border-radius:8px;margin:10px 0}
 .match{border-left:5px solid var(--yellow)}
-.competition{font-size:13px;color:var(--muted);font-weight:700}
-.teams{font-size:18px;font-weight:800;margin:9px 0}
-.meta{color:#475467;font-size:14px;line-height:1.6}
-.score{font-weight:800;color:var(--blue)}
-footer{text-align:center;padding:24px;color:var(--muted);font-size:13px}
-.small{font-size:13px;color:var(--muted)}
-@media(max-width:560px){main{padding:12px}.controls>*{width:100%}button{width:100%}}
+.teams{font-weight:bold;font-size:18px;margin:10px 0}
+.meta{font-size:14px;color:#555;margin:6px 0}
+.competition{font-size:13px;color:#666}
+footer{text-align:center;padding:20px;color:#666;font-size:13px}
+a{color:var(--blue);font-weight:bold}
 </style>
 </head>
 <body>
+
 <header>
 <h1>⚽ REMIX BET</h1>
-<p>Football • Analyses • Matchs</p>
+<p>ANALYSES • STATISTIQUES • SÉLECTIONS</p>
+<p>Construisons nos opportunités ensemble</p>
 </header>
 
 <main>
-<section class="panel">
-<h2>Bienvenue sur REMIX BET</h2>
-<p>Consulte les rencontres disponibles et prépare tes analyses à partir des informations réellement fournies par la source de données.</p>
 
-<div class="controls">
-<label>Date de début
-<input type="date" id="dateFrom">
-</label>
-<label>Date de fin
-<input type="date" id="dateTo">
-</label>
-<button id="loadButton" type="button">🔄 Charger les matchs</button>
+<section id="auth" class="panel">
+<h2 id="authTitle">Bienvenue sur REMIX BET</h2>
+<p>Crée ton compte ou connecte-toi pour accéder à l'application.</p>
+
+<div id="nameArea">
+<label>Nom complet</label>
+<input id="name" type="text" placeholder="Ton nom complet">
 </div>
 
-<p class="small">Période maximale : 14 jours. Les rencontres affichées dépendent des compétitions accessibles avec la source de données.</p>
+<label>Adresse e-mail</label>
+<input id="email" type="email" placeholder="Adresse e-mail" autocomplete="email">
+
+<label>Mot de passe</label>
+<input id="password" type="password" placeholder="Minimum 6 caractères" autocomplete="current-password">
+
+<button id="authButton" style="width:100%">Créer mon compte</button>
+<p id="authMessage" role="status"></p>
+<p id="switchText">
+Déjà inscrit ?
+<a href="#" id="switchMode">Se connecter</a>
+</p>
 </section>
 
-<section id="matches" aria-live="polite">
-<div id="message">Choisis une période puis appuie sur « Charger les matchs ».</div>
+<section id="privateApp" class="hidden">
+<div class="panel">
+<p>Connecté : <strong id="userEmail"></strong></p>
+<button id="logout" class="secondary">Me déconnecter</button>
+</div>
+
+<nav>
+<button data-page="home">Accueil</button>
+<button data-page="matches">Matchs</button>
+<button data-page="referral">Parrainage</button>
+</nav>
+
+<section id="home" class="panel page">
+<h2>Bienvenue dans REMIX BET</h2>
+<p>Ton espace football pour consulter les rencontres disponibles et préparer tes analyses.</p>
+<p>Consulte les matchs et découvre notre programme de parrainage.</p>
 </section>
+
+<section id="matches" class="page hidden">
+<div class="panel">
+<h2>⚽ Matchs disponibles</h2>
+<label>Date de début</label>
+<input type="date" id="dateFrom">
+<label>Date de fin</label>
+<input type="date" id="dateTo">
+<button id="loadButton" style="width:100%">🔄 Charger les matchs</button>
+<p class="meta">Les rencontres dépendent des compétitions accessibles auprès de notre fournisseur de données.</p>
+</div>
+<div id="matchesList" aria-live="polite">
+<div id="message">Choisis les dates puis charge les matchs.</div>
+</div>
+</section>
+
+<section id="referral" class="panel page hidden">
+<h2>🤝 Parrainage REMIX BET</h2>
+<p>Partage REMIX BET avec tes amis et présente-leur notre espace de football.</p>
+<p><strong>Code de parrainage :</strong> REM1XBET</p>
+<p>Site de présentation :</p>
+<p><a href="https://remixntambue8.wixsite.com/mysite" target="_blank" rel="noopener">Visiter notre site de parrainage</a></p>
+</section>
+</section>
+
 </main>
-
 <footer>REMIX BET © 2026</footer>
 
-<script>
-const API_BASE = "https://remix-bet.remixntambue8.workers.dev";
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDA-sBU1fL_q16OmbhFXYLQgRFy2G4aJnU",
+  authDomain: "remix-bet-dce62.firebaseapp.com",
+  projectId: "remix-bet-dce62",
+  storageBucket: "remix-bet-dce62.firebasestorage.app",
+  messagingSenderId: "558528517854",
+  appId: "1:558528517854:web:b2bdddd541dae33438d44f",
+  measurementId: "G-LBLFV7MWYR"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+const authSection = document.getElementById("auth");
+const privateApp = document.getElementById("privateApp");
+const authTitle = document.getElementById("authTitle");
+const authButton = document.getElementById("authButton");
+const authMessage = document.getElementById("authMessage");
+const nameArea = document.getElementById("nameArea");
+let creating = true;
+
+document.getElementById("switchMode").onclick = e => {
+  e.preventDefault();
+  creating = !creating;
+  authTitle.textContent = creating ? "Créer mon compte" : "Connexion";
+  authButton.textContent = creating ? "Créer mon compte" : "Me connecter";
+  nameArea.classList.toggle("hidden",!creating);
+  document.getElementById("switchText").innerHTML = creating
+    ? 'Déjà inscrit ? <a href="#" id="switchMode">Se connecter</a>'
+    : 'Pas encore de compte ? <a href="#" id="switchMode">Créer un compte</a>';
+  document.getElementById("switchMode").onclick = arguments.callee;
+  authMessage.textContent = "";
+};
+
+authButton.onclick = async () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const name = document.getElementById("name").value.trim();
+
+  if (!email || !password || (creating && !name)) {
+    authMessage.textContent = "Remplis tous les champs demandés.";
+    return;
+  }
+  if (password.length < 6) {
+    authMessage.textContent = "Le mot de passe doit contenir au moins 6 caractères.";
+    return;
+  }
+
+  authButton.disabled = true;
+  authMessage.textContent = "Patiente un instant...";
+
+  try {
+    if (creating) {
+      const result = await auth.createUserWithEmailAndPassword(email,password);
+      await result.user.updateProfile({displayName:name});
+    } else {
+      await auth.signInWithEmailAndPassword(email,password);
+    }
+  } catch(error) {
+    const messages = {
+      "auth/email-already-in-use":"Cette adresse possède déjà un compte. Connecte-toi.",
+      "auth/invalid-email":"Adresse e-mail invalide.",
+      "auth/weak-password":"Mot de passe trop faible.",
+      "auth/user-not-found":"Aucun compte trouvé avec cette adresse.",
+      "auth/wrong-password":"Mot de passe incorrect.",
+      "auth/invalid-credential":"Adresse e-mail ou mot de passe incorrect.",
+      "auth/too-many-requests":"Trop de tentatives. Réessaie plus tard."
+    };
+    authMessage.textContent = messages[error.code] || "Erreur : " + error.message;
+  } finally {
+    authButton.disabled = false;
+  }
+};
+
+auth.onAuthStateChanged(user => {
+  if(user) {
+    authSection.classList.add("hidden");
+    privateApp.classList.remove("hidden");
+    document.getElementById("userEmail").textContent =
+      user.displayName ? user.displayName + " — " + user.email : user.email;
+    showPage("home");
+  } else {
+    privateApp.classList.add("hidden");
+    authSection.classList.remove("hidden");
+  }
+});
+
+document.getElementById("logout").onclick = () => auth.signOut();
+
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(el => el.classList.add("hidden"));
+  document.getElementById(page).classList.remove("hidden");
+}
+document.querySelectorAll("nav button").forEach(button => {
+  button.onclick = () => showPage(button.dataset.page);
+});
+
+/* CHARGEMENT DES MATCHS */
+const API_BASE = "https://remix-bet.remixntambue8.workers.dev";
 const fromInput = document.getElementById("dateFrom");
 const toInput = document.getElementById("dateTo");
 const loadButton = document.getElementById("loadButton");
-const zone = document.getElementById("matches");
+const zone = document.getElementById("matchesList");
 
-function localDateString(date) {
-const y = date.getFullYear();
-const m = String(date.getMonth()+1).padStart(2,"0");
-const d = String(date.getDate()).padStart(2,"0");
-return `${y}-${m}-${d}`;
+function dateString(date) {
+  return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");
 }
-
 const today = new Date();
 const later = new Date(today);
 later.setDate(later.getDate()+6);
-
-fromInput.value = localDateString(today);
-toInput.value = localDateString(later);
-fromInput.max = localDateString(later);
-toInput.max = localDateString(new Date(today.getFullYear(),today.getMonth(),today.getDate()+13));
+fromInput.value = dateString(today);
+toInput.value = dateString(later);
 
 function showMessage(message) {
-zone.replaceChildren();
-const p = document.createElement("div");
-p.id = "message";
-p.textContent = message;
-zone.appendChild(p);
+  zone.innerHTML = "";
+  const p = document.createElement("div");
+  p.id = "message";
+  p.textContent = message;
+  zone.appendChild(p);
 }
-
+function addText(parent,tag,className,value) {
+  const el = document.createElement(tag);
+  el.className = className;
+  el.textContent = value || "Non communiqué";
+  parent.appendChild(el);
+}
 function displayDate(value) {
-if (!value) return "Horaire non communiqué";
-const date = new Date(value);
-if (Number.isNaN(date.getTime())) return "Horaire non communiqué";
-return new Intl.DateTimeFormat("fr-FR",{
-dateStyle:"medium",
-timeStyle:"short"
-}).format(date);
+  if(!value) return "Horaire non communiqué";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "Horaire non communiqué" :
+    new Intl.DateTimeFormat("fr-FR",{dateStyle:"medium",timeStyle:"short"}).format(date);
 }
-
-function addText(parent, tag, className, value) {
-const el = document.createElement(tag);
-if (className) el.className = className;
-el.textContent = value || "Non communiqué";
-parent.appendChild(el);
-return el;
-}
-
 function afficherMatch(match) {
-const card = document.createElement("article");
-card.className = "match";
-
-addText(card,"div","competition",
-match.competition?.name || "Compétition non précisée");
-
-const home = match.homeTeam?.name ||
-match.homeTeam?.shortName || "Équipe domicile";
-
-const away = match.awayTeam?.name ||
-match.awayTeam?.shortName || "Équipe extérieure";
-
-addText(card,"div","teams",`⚽ ${home} — ${away}`);
-
-const score = match.score?.fullTime;
-
-if (score && (score.home !== null || score.away !== null)) {
-addText(card,"div","score",
-`Score : ${score.home ?? "—"} - ${score.away ?? "—"}`);
+  const card = document.createElement("article");
+  card.className = "match";
+  addText(card,"div","competition",match.competition?.name || "Compétition non précisée");
+  addText(card,"div","teams","⚽ "+(match.homeTeam?.name || "Équipe domicile")+" — "+(match.awayTeam?.name || "Équipe extérieure"));
+  const score = match.score?.fullTime;
+  if(score && (score.home !== null || score.away !== null)) {
+    addText(card,"div","meta","Score : "+(score.home ?? "—")+" - "+(score.away ?? "—"));
+  }
+  addText(card,"div","meta","📅 "+displayDate(match.utcDate));
+  addText(card,"div","meta","État : "+(match.status || "Non communiqué"));
+  addText(card,"div","meta","Les informations affichées proviennent des données disponibles.");
+  zone.appendChild(card);
 }
-
-addText(card,"div","meta",`📅 ${displayDate(match.utcDate)}`);
-addText(card,"div","meta",`État : ${match.status || "Non communiqué"}`);
-
-if (match.matchday) {
-addText(card,"div","meta",`Journée : ${match.matchday}`);
-}
-
-const details = document.createElement("p");
-details.className = "small";
-details.textContent = "Informations affichées selon les données disponibles. Aucune prédiction ou statistique n’est inventée.";
-card.appendChild(details);
-
-zone.appendChild(card);
-}
-
 async function chargerMatchs() {
-const from = fromInput.value;
-const to = toInput.value;
-
-if (!from || !to) {
-showMessage("Choisis une date de début et une date de fin.");
-return;
+  const from = fromInput.value;
+  const to = toInput.value;
+  if(!from || !to || to < from) {
+    showMessage("Vérifie les dates choisies.");
+    return;
+  }
+  const days = (Date.parse(to+"T00:00:00Z")-Date.parse(from+"T00:00:00Z"))/86400000;
+  if(days > 13) {
+    showMessage("Choisis une période de 14 jours maximum.");
+    return;
+  }
+  loadButton.disabled = true;
+  loadButton.textContent = "Chargement...";
+  showMessage("Chargement des rencontres...");
+  try {
+    const url = new URL(API_BASE);
+    url.searchParams.set("dateFrom",from);
+    url.searchParams.set("dateTo",to);
+    const response = await fetch(url);
+    const data = await response.json();
+    if(!response.ok) throw new Error(data.message || data.error || "Erreur serveur");
+    const matches = Array.isArray(data.matches) ? data.matches : [];
+    zone.innerHTML = "";
+    if(matches.length === 0) {
+      showMessage("Aucun match disponible pour cette période. Essaie d'autres dates.");
+      return;
+    }
+    addText(zone,"div","panel",matches.length+" rencontre(s) trouvée(s).");
+    matches.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
+    matches.forEach(afficherMatch);
+  } catch(error) {
+    showMessage("Impossible de charger les matchs : "+error.message);
+  } finally {
+    loadButton.disabled = false;
+    loadButton.textContent = "🔄 Charger les matchs";
+  }
 }
-
-if (to < from) {
-showMessage("La date de fin doit être égale ou postérieure à la date de début.");
-return;
-}
-
-const days = (
-Date.parse(to+"T00:00:00Z") -
-Date.parse(from+"T00:00:00Z")
-) / 86400000;
-
-if (days > 13) {
-showMessage("Choisis une période de 14 jours maximum.");
-return;
-}
-
-loadButton.disabled = true;
-loadButton.textContent = "Chargement…";
-showMessage("🔄 Chargement des rencontres…");
-
-try {
-const url = new URL(API_BASE);
-url.searchParams.set("dateFrom",from);
-url.searchParams.set("dateTo",to);
-
-const response = await fetch(url.toString(),{
-method:"GET",
-headers:{Accept:"application/json"}
-});
-
-const data = await response.json().catch(()=>({}));
-
-if (!response.ok) {
-const detail = data.message || data.error ||
-`Erreur serveur (${response.status})`;
-throw new Error(detail);
-}
-
-const matchs = Array.isArray(data.matches) ? data.matches : [];
-
-zone.replaceChildren();
-
-if (matchs.length === 0) {
-showMessage("Aucun match disponible pour cette période avec les compétitions accessibles à la source de données. Essaie d’autres dates.");
-return;
-}
-
-const summary = document.createElement("div");
-summary.id = "message";
-summary.textContent = `${matchs.length} rencontre(s) trouvée(s) du ${from} au ${to}.`;
-zone.appendChild(summary);
-
-matchs.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
-matchs.forEach(afficherMatch);
-
-} catch (error) {
-console.error(error);
-showMessage(`Impossible de charger les matchs : ${error.message}. Vérifie que le serveur Cloudflare est disponible et que sa clé API est configurée.`);
-} finally {
-loadButton.disabled = false;
-loadButton.textContent = "🔄 Charger les matchs";
-}
-}
-
-loadButton.addEventListener("click",chargerMatchs);
+loadButton.onclick = chargerMatchs;
 </script>
 </body>
 </html>
