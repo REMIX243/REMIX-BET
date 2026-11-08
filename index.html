@@ -513,3 +513,24 @@ function applyBrand() {
 
 $("saveBrand").addEventListener("click",() => {
  localStorage.setItem("rb_title",$("customTitle").
+value.trim());
+ localStorage.setItem("rb_slogan",$("customSlogan").value.trim());
+ localStorage.setItem("rb_blue",$("customBlue").value);
+ localStorage.setItem("rb_yellow",$("customYellow").value);
+ localStorage.setItem("rb_code",$("customReferral").value.trim() || "REM1XBET");
+ localStorage.setItem("rb_link",$("customLink").value.trim());
+ applyBrand();
+ $("settingsMessage").textContent = "Personnalisation enregistrée sur cet appareil.";
+});
+
+$("resetBrand").addEventListener("click",() => {
+ ["rb_title","rb_subtitle","rb_slogan","rb_blue","rb_yellow","rb_code","rb_link"].forEach(k => localStorage.removeItem(k));
+ applyBrand();
+ $("settingsMessage").textContent = "Personnalisation réinitialisée.";
+});
+
+setAuthMode(false);
+applyBrand();
+</script>
+</body>
+</html>
