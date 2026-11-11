@@ -27,12 +27,15 @@ nav button{flex:1;min-width:90px}
 .meta{color:#666;font-size:13px}
 .note{background:#fff5cf;padding:12px;border-radius:8px;font-size:13px}
 .ai{white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}
-.error{color:#b00020}
+.error{color:#b00020;font-weight:bold}
+.good{color:#087b37;font-weight:bold}
+.status{padding:9px;background:#f2f4f8;border-radius:7px;margin-top:10px;overflow-wrap:anywhere}
 footer{text-align:center;padding:20px;color:#666}
 a{color:var(--b)}
 </style>
 </head>
 <body>
+
 <header>
 <h1>⚽ REMIX BET</h1>
 <p>ANALYSES • STATISTIQUES • SÉLECTIONS</p>
@@ -75,7 +78,7 @@ Connecté : <b id="userLabel"></b>
 <p>Consulte les rencontres et demande une analyse à notre intelligence artificielle.</p>
 <button data-goto="matches">Voir les matchs</button>
 <button data-goto="analysis">Voir les analyses</button>
-<p class="note">Les analyses sont des estimations fondées sur les données disponibles. Aucun pari ni résultat n'est garanti.</p>
+<p class="note">Les analyses sont des estimations statistiques. Aucun résultat n'est garanti.</p>
 </section>
 
 <section id="matches" class="page hidden">
@@ -93,7 +96,7 @@ Connecté : <b id="userLabel"></b>
 <section id="analysis" class="page hidden">
 <div class="panel">
 <h2>🧠 Centre d'analyses IA</h2>
-<p>Choisis un match dans la liste pour lancer son analyse.</p>
+<p>Les résultats des analyses apparaîtront ici.</p>
 <div id="analysisList">Charge d'abord les matchs.</div>
 </div>
 </section>
@@ -111,6 +114,7 @@ Connecté : <b id="userLabel"></b>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
 <script>
 "use strict";
 
@@ -127,8 +131,10 @@ firebase.initializeApp({
 const auth=firebase.auth();
 const $=id=>document.getElementById(id);
 const API="https://remix-bet.remixntambue8.workers.dev";
+
 let creating=false;
 let matches=[];
+let activeAnalyses=new Set();
 
 function authMode(register){
  creating=register;
@@ -197,6 +203,7 @@ function showPage(page){
 document.querySelectorAll("[data-page]").forEach(b=>{
  b.onclick=()=>showPage(b.dataset.page);
 });
+
 document.querySelectorAll("[data-goto]").forEach(b=>{
  b.onclick=()=>showPage(b.dataset.goto);
 });
@@ -211,26 +218,60 @@ end.setDate(end.getDate()+6);
 $("dateFrom").value=dateString(today);
 $("dateTo").value=dateString(end);
 
-async function readResponse(response){
- const data=await response.json().catch(()=>({}));
- if(!response.ok){
-  throw Error(data.error||data.message||"Erreur du serveur ("+response.status+")");
+async function fetchTimeout(url,options={},timeout=30000){
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),timeout);
+
+ try{
+  return await fetch(url,{
+   ...options,
+   signal:controller.signal,
+   cache:"no-store"
+  });
+ }catch(e){
+  if(e.name==="AbortError"){
+   throw Error("Le serveur ne répond pas dans le délai prévu.");
+  }
+  throw e;
+ }finally{
+  clearTimeout(timer);
  }
+}
+
+async function readResponse(response){
+ const raw=await response.text();
+ let data={};
+
+ try{
+  data=raw?JSON.parse(raw):{};
+ }catch(e){
+  throw Error("Réponse serveur illisible. Code HTTP "+response.status);
+ }
+
+ if(!response.ok){
+  throw Error(data.details||data.error||data.message||"Erreur HTTP "+response.status);
+ }
+
  return data;
 }
 
 async function request(params){
  const url=new URL(API);
  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
- return readResponse(await fetch(url));
+ const response=await fetchTimeout(url,{},25000);
+ return readResponse(response);
 }
 
 async function requestAI(payload){
- const response=await fetch(API+"/ai-analysis",{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify(payload)
- });
+ const response=await fetchTimeout(
+  API+"/ai-analysis",
+  {
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify(payload)
+  },
+  75000
+ );
  return readResponse(response);
 }
 
@@ -257,6 +298,7 @@ async function chargerMatchs(){
  }
 
  const days=(Date.parse(to+"T00:00:00Z")-Date.parse(from+"T00:00:00Z"))/86400000;
+
  if(days>13){
   $("matchesList").textContent="Maximum 14 jours.";
   return;
@@ -270,6 +312,7 @@ async function chargerMatchs(){
   matches=data.matches||[];
   $("matchesList").replaceChildren();
   $("analysisList").replaceChildren();
+  activeAnalyses.clear();
 
   if(!matches.length){
    $("matchesList").textContent="Aucun match disponible sur cette période.";
@@ -282,18 +325,22 @@ async function chargerMatchs(){
   matches.forEach((m,i)=>{
    const card=document.createElement("article");
    card.className="match";
+
    text(card,"div",m.competition?.name||"Compétition");
-   text(card,"div",(m.homeTeam?.name||"Équipe domicile")+" — "+(m.awayTeam?.name||"Équipe extérieure")).className="teams";
+   text(card,"div",(m.homeTeam?.name||"Domicile")+" — "+(m.awayTeam?.name||"Extérieur")).className="teams";
    text(card,"p",dateDisplay(m.utcDate)).className="meta";
 
    const button=text(card,"button","Analyser avec l'IA");
-   button.onclick=()=>analyser(i,button);
+   const status=text(card,"p","En attente d'analyse.");
+   status.className="status meta";
+
+   button.onclick=()=>analyser(i,button,status);
    $("matchesList").appendChild(card);
 
    const ab=text($("analysisList"),"button",
     (m.homeTeam?.name||"Domicile")+" — "+(m.awayTeam?.name||"Extérieur"));
    ab.style.margin="5px";
-   ab.onclick=()=>analyser(i,ab);
+   ab.onclick=()=>analyser(i,ab,status);
   });
 
  }catch(e){
@@ -303,38 +350,71 @@ async function chargerMatchs(){
  }
 }
 
-async function analyser(index,button){
+async function analyser(index,button,matchStatus){
  const m=matches[index];
+
  if(!m||!m.homeTeam?.id||!m.awayTeam?.id){
   alert("Informations du match incomplètes.");
   return;
  }
 
+ if(activeAnalyses.has(index))return;
+ activeAnalyses.add(index);
+
  button.disabled=true;
  const oldLabel=button.textContent;
- button.textContent="Analyse IA en cours...";
+ button.textContent="Analyse en cours...";
 
  const output=document.createElement("div");
  output.className="panel";
+
  text(output,"h3",(m.homeTeam.name||"Domicile")+" — "+(m.awayTeam.name||"Extérieur"));
- const status=text(output,"p","Récupération des dix derniers matchs...");
- status.className="meta";
+
+ const status=text(output,"p","Récupération des statistiques...");
+ status.className="status meta";
+
  $("analysisList").prepend(output);
 
+ function updateStatus(message,error=false){
+  status.textContent=message;
+  status.className=error?"status error":"status meta";
+  if(matchStatus){
+   matchStatus.textContent=message;
+   matchStatus.className=error?"status error":"status meta";
+  }
+ }
+
  try{
+  updateStatus("Étape 1/2 : récupération des derniers matchs...");
+
   const [homeData,awayData]=await Promise.all([
    request({action:"team-matches",teamId:m.homeTeam.id}),
    request({action:"team-matches",teamId:m.awayTeam.id})
   ]);
 
-  const homeRecent=(homeData.matches||[]).filter(x=>x.status==="FINISHED").slice(0,10);
-  const awayRecent=(awayData.matches||[]).filter(x=>x.status==="FINISHED").slice(0,10);
+  const simplify=list=>(list||[])
+   .filter(x=>x.status==="FINISHED")
+   .slice(0,10)
+   .map(x=>({
+    date:x.utcDate,
+    competition:x.competition?.name||"",
+    home:x.homeTeam?.name||"",
+    away:x.awayTeam?.name||"",
+    score:{
+     home:x.score?.fullTime?.home,
+     away:x.score?.fullTime?.away
+    },
+    winner:x.score?.winner||""
+   }));
+
+  const homeRecent=simplify(homeData.matches);
+  const awayRecent=simplify(awayData.matches);
 
   if(homeRecent.length<3||awayRecent.length<3){
-   throw Error("Pas assez de matchs terminés pour produire une analyse sérieuse. Réessaie avec une autre rencontre.");
+   throw Error("Pas assez de matchs terminés pour ces équipes. Essaie une autre rencontre.");
   }
 
-  status.textContent="Données récupérées : "+homeRecent.length+" matchs pour "+m.homeTeam.name+" et "+awayRecent.length+" pour "+m.awayTeam.name+". Demande d'analyse à l'IA...";
+  updateStatus("Étape 2/2 : envoi des statistiques à l'intelligence artificielle...");
 
   const result=await requestAI({
    match:{
@@ -349,30 +429,29 @@ async function analyser(index,button){
   });
 
   if(!result.success||!result.analysis){
-   throw Error(result.error||"L'IA n'a pas retourné d'analyse.");
+   throw Error(result.details||result.error||"L'IA n'a retourné aucune analyse.");
   }
 
-  status.textContent="Analyse IA terminée";
-  status.className="good";
+  updateStatus("Analyse IA terminée avec succès.");
 
   const analysis=document.createElement("div");
   analysis.className="ai";
   analysis.textContent=result.analysis;
   output.appendChild(analysis);
 
-  const note=document.createElement("p");
-  note.className="note";
-  note.textContent="Attention : cette analyse repose sur les données statistiques disponibles. Les compositions, blessures et autres actualités ne sont pas confirmées si elles ne figurent pas dans les données. Aucun pronostic n'est garanti. Parie uniquement de manière responsable.";
-  output.appendChild(note);
+  text(
+   output,
+   "p",
+   "Attention : les probabilités sont des estimations fondées sur les données disponibles. Aucun pronostic n'est garanti. Parie de manière responsable."
+  ).className="note";
+
+  showPage("analysis");
 
  }catch(e){
-  status.textContent="Analyse non disponible : "+e.message;
-  status.className="error";
-  const note=document.createElement("p");
-  note.className="note";
-  note.textContent="Vérifie la configuration du service IA et les données du match. Aucun pronostic fictif ne sera affiché.";
-  output.appendChild(note);
+  updateStatus("ANALYSE NON DISPONIBLE : "+e.message,true);
+  text(output,"p","Aucun pronostic fictif ne sera affiché. Vérifie le service et réessaie.").className="note";
  }finally{
+  activeAnalyses.delete(index);
   button.disabled=false;
   button.textContent=oldLabel;
  }
@@ -381,4 +460,5 @@ async function analyser(index,button){
 authMode(false);
 </script>
 </body>
-</html>
+ </html>
+ 
