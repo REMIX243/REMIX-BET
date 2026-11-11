@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -24,18 +25,14 @@ nav button{flex:1;min-width:90px}
 .match{border-left:5px solid var(--y)}
 .teams{font-size:18px;font-weight:bold}
 .meta{color:#666;font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px}
-.market{background:#f1f4fa;border-radius:9px;padding:12px}
-.market b{display:block;color:var(--b);margin-bottom:6px}
 .note{background:#fff5cf;padding:12px;border-radius:8px;font-size:13px}
-.good{color:#14752c}
+.ai{white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}
 .error{color:#b00020}
 footer{text-align:center;padding:20px;color:#666}
 a{color:var(--b)}
 </style>
 </head>
 <body>
-
 <header>
 <h1>⚽ REMIX BET</h1>
 <p>ANALYSES • STATISTIQUES • SÉLECTIONS</p>
@@ -69,16 +66,16 @@ Connecté : <b id="userLabel"></b>
 <nav>
 <button data-page="home">Accueil</button>
 <button data-page="matches">Matchs</button>
-<button data-page="analysis">Analyses</button>
+<button data-page="analysis">Analyses IA</button>
 <button data-page="referral">Parrainage</button>
 </nav>
 
 <section id="home" class="panel page">
 <h2>Bienvenue dans REMIX BET</h2>
-<p>Consulte les matchs et lance les analyses statistiques.</p>
+<p>Consulte les rencontres et demande une analyse à notre intelligence artificielle.</p>
 <button data-goto="matches">Voir les matchs</button>
 <button data-goto="analysis">Voir les analyses</button>
-<p class="note">Les probabilités sont des estimations statistiques. Aucun résultat sportif n'est garanti.</p>
+<p class="note">Les analyses sont des estimations fondées sur les données disponibles. Aucun pari ni résultat n'est garanti.</p>
 </section>
 
 <section id="matches" class="page hidden">
@@ -95,8 +92,8 @@ Connecté : <b id="userLabel"></b>
 
 <section id="analysis" class="page hidden">
 <div class="panel">
-<h2>📊 Centre d'analyses</h2>
-<p>Sélectionne une rencontre pour calculer les probabilités.</p>
+<h2>🧠 Centre d'analyses IA</h2>
+<p>Choisis un match dans la liste pour lancer son analyse.</p>
 <div id="analysisList">Charge d'abord les matchs.</div>
 </div>
 </section>
@@ -114,7 +111,6 @@ Connecté : <b id="userLabel"></b>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-
 <script>
 "use strict";
 
@@ -161,11 +157,12 @@ $("authButton").onclick=async()=>{
   return;
  }
  if(password.length<6){
-  $("authMessage").textContent="Minimum 6 caractères pour le mot de passe.";
+  $("authMessage").textContent="Mot de passe : 6 caractères minimum.";
   return;
  }
 
  $("authButton").disabled=true;
+ $("authMessage").textContent="Connexion en cours...";
 
  try{
   if(creating){
@@ -200,7 +197,6 @@ function showPage(page){
 document.querySelectorAll("[data-page]").forEach(b=>{
  b.onclick=()=>showPage(b.dataset.page);
 });
-
 document.querySelectorAll("[data-goto]").forEach(b=>{
  b.onclick=()=>showPage(b.dataset.goto);
 });
@@ -215,13 +211,27 @@ end.setDate(end.getDate()+6);
 $("dateFrom").value=dateString(today);
 $("dateTo").value=dateString(end);
 
+async function readResponse(response){
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok){
+  throw Error(data.error||data.message||"Erreur du serveur ("+response.status+")");
+ }
+ return data;
+}
+
 async function request(params){
  const url=new URL(API);
  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
- const response=await fetch(url);
- const data=await response.json();
- if(!response.ok)throw Error(data.message||data.error||"Erreur API");
- return data;
+ return readResponse(await fetch(url));
+}
+
+async function requestAI(payload){
+ const response=await fetch(API+"/ai-analysis",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify(payload)
+ });
+ return readResponse(response);
 }
 
 function text(parent,tag,value){
@@ -272,16 +282,16 @@ async function chargerMatchs(){
   matches.forEach((m,i)=>{
    const card=document.createElement("article");
    card.className="match";
-
    text(card,"div",m.competition?.name||"Compétition");
-   text(card,"div",`${m.homeTeam.name} — ${m.awayTeam.name}`).className="teams";
+   text(card,"div",(m.homeTeam?.name||"Équipe domicile")+" — "+(m.awayTeam?.name||"Équipe extérieure")).className="teams";
    text(card,"p",dateDisplay(m.utcDate)).className="meta";
 
-   const button=text(card,"button","Analyser ce match");
+   const button=text(card,"button","Analyser avec l'IA");
    button.onclick=()=>analyser(i,button);
    $("matchesList").appendChild(card);
 
-   const ab=text($("analysisList"),"button",`${m.homeTeam.name} — ${m.awayTeam.name}`);
+   const ab=text($("analysisList"),"button",
+    (m.homeTeam?.name||"Domicile")+" — "+(m.awayTeam?.name||"Extérieur"));
    ab.style.margin="5px";
    ab.onclick=()=>analyser(i,ab);
   });
@@ -293,189 +303,82 @@ async function chargerMatchs(){
  }
 }
 
-/* MOTEUR STATISTIQUE */
-
-function poisson(lambda,k){
- let p=Math.exp(-lambda);
- for(let i=1;i<=k;i++)p*=lambda/i;
- return p;
-}
-
-function distribution(lambda){
- const a=[];
- for(let i=0;i<=10;i++)a.push(poisson(lambda,i));
- const total=a.reduce((x,y)=>x+y,0);
- return a.map(x=>x/total);
-}
-
-function averageForTeam(games,teamId,venue){
- let scored=0,conceded=0,count=0;
-
- for(const m of games){
-  const h=m.score?.fullTime?.home;
-  const a=m.score?.fullTime?.away;
-  if(!Number.isFinite(h)||!Number.isFinite(a))continue;
-
-  const isHome=m.homeTeam?.id===teamId;
-  const isAway=m.awayTeam?.id===teamId;
-  if(!isHome&&!isAway)continue;
-
-  if(venue==="HOME"&&!isHome)continue;
-  if(venue==="AWAY"&&!isAway)continue;
-
-  scored+=isHome?h:a;
-  conceded+=isHome?a:h;
-  count++;
- }
-
- return count?{scored:scored/count,conceded:conceded/count,count}:null;
-}
-
-function calculate(homeGames,awayGames,homeId,awayId){
-
- const hg=homeGames.filter(m=>m.status==="FINISHED");
- const ag=awayGames.filter(m=>m.status==="FINISHED");
-
- if(hg.length<3||ag.length<3){
-  throw Error("Moins de trois matchs terminés disponibles pour une équipe.");
- }
-
- const homeSpecific=averageForTeam(hg,homeId,"HOME");
- const awaySpecific=averageForTeam(ag,awayId,"AWAY");
-
- const homeAll=averageForTeam(hg,homeId,"ALL");
- const awayAll=averageForTeam(ag,awayId,"ALL");
-
- if(!homeAll||!awayAll)throw Error("Statistiques insuffisantes.");
-
- const h=homeSpecific&&homeSpecific.count>=3?homeSpecific:homeAll;
- const a=awaySpecific&&awaySpecific.count>=3?awaySpecific:awayAll;
-
- const homeLambda=Math.max(.15,Math.min(4,(h.scored+a.conceded)/2));
- const awayLambda=Math.max(.15,Math.min(4,(a.scored+h.conceded)/2));
-
- const ph=distribution(homeLambda);
- const pa=distribution(awayLambda);
-
- let p1=0,px=0,p2=0,over=0,btts=0;
- const scores=[];
-
- for(let i=0;i<ph.length;i++){
-  for(let j=0;j<pa.length;j++){
-   const p=ph[i]*pa[j];
-
-   if(i>j)p1+=p;
-   else if(i===j)px+=p;
-   else p2+=p;
-
-   if(i+j>=3)over+=p;
-   if(i>0&&j>0)btts+=p;
-
-   scores.push({score:i+"-"+j,p});
-  }
- }
-
- scores.sort((a,b)=>b.p-a.p);
-
- return {
-  p1,px,p2,
-  over,
-  under:1-over,
-  btts,
-  homeLambda,
-  awayLambda,
-  scores:scores.slice(0,3),
-  homeSample:h.count,
-  awaySample:a.count,
-  splitUsed:!!(homeSpecific&&homeSpecific.count>=3&&awaySpecific&&awaySpecific.count>=3)
- };
-}
-
-function percent(x){
- return (x*100).toFixed(1)+" %";
-}
-
-function market(label,value){
- const card=document.createElement("div");
- card.className="market";
- text(card,"b",label);
- text(card,"div",value);
- return card;
-}
-
 async function analyser(index,button){
  const m=matches[index];
+ if(!m||!m.homeTeam?.id||!m.awayTeam?.id){
+  alert("Informations du match incomplètes.");
+  return;
+ }
+
  button.disabled=true;
- button.textContent="Analyse en cours...";
+ const oldLabel=button.textContent;
+ button.textContent="Analyse IA en cours...";
 
  const output=document.createElement("div");
  output.className="panel";
- const title=text(output,"h3",`${m.homeTeam.name} — ${m.awayTeam.name}`);
- const status=text(output,"p","Récupération des statistiques...");
+ text(output,"h3",(m.homeTeam.name||"Domicile")+" — "+(m.awayTeam.name||"Extérieur"));
+ const status=text(output,"p","Récupération des dix derniers matchs...");
  status.className="meta";
-
  $("analysisList").prepend(output);
 
  try{
   const [homeData,awayData]=await Promise.all([
-   request({action:"team-matches",teamId:m.homeTeam.id,limit:10}),
-   request({action:"team-matches",teamId:m.awayTeam.id,limit:10})
+   request({action:"team-matches",teamId:m.homeTeam.id}),
+   request({action:"team-matches",teamId:m.awayTeam.id})
   ]);
 
-  const result=calculate(
-   homeData.matches||[],
-   awayData.matches||[],
-   m.homeTeam.id,
-   m.awayTeam.id
-  );
+  const homeRecent=(homeData.matches||[]).filter(x=>x.status==="FINISHED").slice(0,10);
+  const awayRecent=(awayData.matches||[]).filter(x=>x.status==="FINISHED").slice(0,10);
 
-  status.textContent=
-   `Échantillon : ${result.homeSample} matchs pour ${m.homeTeam.name} et ${result.awaySample} pour ${m.awayTeam.name}. `+
-   (result.splitUsed?"Domicile/extérieur utilisé.":"Moyennes générales utilisées faute de données domicile/extérieur suffisantes.");
+  if(homeRecent.length<3||awayRecent.length<3){
+   throw Error("Pas assez de matchs terminés pour produire une analyse sérieuse. Réessaie avec une autre rencontre.");
+  }
 
-  const grid=document.createElement("div");
-  grid.className="grid";
+  status.textContent="Données récupérées : "+homeRecent.length+" matchs pour "+m.homeTeam.name+" et "+awayRecent.length+" pour "+m.awayTeam.name+". Demande d'analyse à l'IA...";
 
-  grid.append(
-   market("1 — Victoire domicile",percent(result.p1)),
-   market("N — Match nul",percent(result.px)),
-   market("2 — Victoire extérieur",percent(result.p2)),
-   market("Double chance 1X",percent(result.p1+result.px)),
-   market("Double chance X2",percent(result.px+result.p2)),
-   market("Double chance 12",percent(result.p1+result.p2)),
-   market("Plus de 2,5 buts",percent(result.over)),
-   market("Moins de 2,5 buts",percent(result.under)),
-   market("Les deux équipes marquent OUI",percent(result.btts)),
-   market("Les deux équipes marquent NON",percent(1-result.btts)),
-   market("Buts attendus domicile",result.homeLambda.toFixed(2)),
-   market("Buts attendus extérieur",result.awayLambda.toFixed(2)),
-   market("Scores les plus probables",result.scores.map(x=>x.score+" ("+percent(x.p)+")").join(" • "))
-  );
+  const result=await requestAI({
+   match:{
+    competition:m.competition?.name||"Compétition non précisée",
+    homeTeam:m.homeTeam.name,
+    awayTeam:m.awayTeam.name,
+    utcDate:m.utcDate,
+    status:m.status
+   },
+   homeRecent,
+   awayRecent
+  });
 
-  output.appendChild(grid);
+  if(!result.success||!result.analysis){
+   throw Error(result.error||"L'IA n'a pas retourné d'analyse.");
+  }
+
+  status.textContent="Analyse IA terminée";
+  status.className="good";
+
+  const analysis=document.createElement("div");
+  analysis.className="ai";
+  analysis.textContent=result.analysis;
+  output.appendChild(analysis);
 
   const note=document.createElement("p");
   note.className="note";
-  note.textContent=
-   "Méthode : modèle de Poisson utilisant les buts marqués et encaissés dans les dix derniers matchs disponibles. "+
-   "Les marchés mi-temps et corners ne sont pas calculés sans données vérifiées spécifiques. "+
-   "Les scores exacts sont particulièrement incertains. Ces estimations ne sont pas des garanties.";
+  note.textContent="Attention : cette analyse repose sur les données statistiques disponibles. Les compositions, blessures et autres actualités ne sont pas confirmées si elles ne figurent pas dans les données. Aucun pronostic n'est garanti. Parie uniquement de manière responsable.";
   output.appendChild(note);
 
  }catch(e){
   status.textContent="Analyse non disponible : "+e.message;
+  status.className="error";
   const note=document.createElement("p");
   note.className="note";
-  note.textContent="Aucun pronostic artificiel ne sera affiché lorsque les données sont insuffisantes.";
+  note.textContent="Vérifie la configuration du service IA et les données du match. Aucun pronostic fictif ne sera affiché.";
   output.appendChild(note);
  }finally{
   button.disabled=false;
-  button.textContent="Analyser ce match";
+  button.textContent=oldLabel;
  }
 }
 
 authMode(false);
 </script>
 </body>
- </html>
- 
+</html>
