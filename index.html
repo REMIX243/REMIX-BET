@@ -2,548 +2,660 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#ffd400">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#003399">
 <title>REMIX BET</title>
+
 <style>
-:root{--y:#ffd400;--b:#003399;--bg:#f2f4f8}
+:root {
+  --yellow:#ffd400;
+  --blue:#003399;
+  --dark:#07152f;
+  --light:#f3f6fc;
+  --white:#fff;
+  --green:#087b43;
+  --red:#b42318;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);font:15px Arial;color:#172033}
-header{background:var(--y);color:var(--b);text-align:center;padding:20px}
-header h1{margin:0}
-main{max-width:950px;margin:auto;padding:12px}
-.panel,.match{background:white;padding:16px;border-radius:13px;margin:12px 0;box-shadow:0 2px 9px #0001}
-h2,h3{color:var(--b)}
-button{background:var(--b);color:white;border:0;padding:12px 15px;border-radius:8px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5}
-input{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #bbb;border-radius:8px;font-size:16px}
-label{display:block;font-weight:bold}
-nav{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--light);
+  color:var(--dark);
+}
+header{
+  background:var(--blue);
+  color:white;
+  padding:20px 14px;
+  text-align:center;
+  border-bottom:5px solid var(--yellow);
+}
+header h1{margin:0;color:var(--yellow);font-size:27px}
+header p{margin:7px 0 0;font-size:13px}
+main{max-width:850px;margin:auto;padding:14px}
+.panel{
+  background:white;
+  padding:16px;
+  margin:14px 0;
+  border-radius:12px;
+  box-shadow:0 2px 9px #00000012;
+}
+h2{color:var(--blue);margin-top:0}
+h3{color:var(--blue)}
+input,select{
+  width:100%;
+  padding:12px;
+  margin:7px 0 12px;
+  border:1px solid #ccd3df;
+  border-radius:8px;
+  font-size:15px;
+  background:white;
+}
+button{
+  border:0;
+  border-radius:8px;
+  padding:12px 15px;
+  margin:4px 3px 4px 0;
+  font-weight:bold;
+  font-size:14px;
+  cursor:pointer;
+  background:var(--yellow);
+  color:#111;
+}
+button.blue{background:var(--blue);color:white}
+button.red{background:#b42318;color:white}
+button:disabled{opacity:.5;cursor:not-allowed}
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin:12px 0;
+}
 nav button{flex:1;min-width:90px}
 .hidden{display:none!important}
-.match{border-left:5px solid var(--y)}
-.teams{font-size:18px;font-weight:bold}
-.meta{color:#666;font-size:13px}
-.note{background:#fff5cf;padding:12px;border-radius:8px;font-size:13px}
-.ai{white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}
-.error{color:#b00020;font-weight:bold}
-.good{color:#087b37;font-weight:bold}
-.status{padding:9px;background:#f2f4f8;border-radius:7px;margin-top:10px;overflow-wrap:anywhere}
-footer{text-align:center;padding:20px;color:#666}
-a{color:var(--b)}
+.status{padding:10px;border-radius:8px;background:#eef3ff;margin:10px 0}
+.error{background:#fff0ef;color:var(--red)}
+.success{background:#eaf8ef;color:var(--green)}
+.match{
+  border:1px solid #e0e5ee;
+  border-left:5px solid var(--yellow);
+  border-radius:9px;
+  padding:13px;
+  margin:12px 0;
+}
+.match strong{color:var(--blue)}
+.meta{font-size:13px;color:#5b6472}
+.result{
+  background:#f5f7fb;
+  padding:12px;
+  border-radius:8px;
+  margin:9px 0;
+}
+.prob{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  padding:6px 0;
+  border-bottom:1px solid #e5e8ef;
+}
+footer{text-align:center;padding:20px;color:#657085;font-size:12px}
+a{color:var(--blue);font-weight:bold}
+.small{font-size:12px;color:#657085}
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>⚽ REMIX BET</h1>
-<p>ANALYSES • STATISTIQUES • SÉLECTIONS</p>
-<b>Construisons nos opportunités ensemble</b>
+  <h1>⚽ REMIX BET</h1>
+  <p>ANALYSES • STATISTIQUES • SÉLECTIONS</p>
+  <p>Construisons nos opportunités ensemble</p>
 </header>
 
 <main>
-<section id="auth" class="panel">
-<h2 id="authTitle">Bienvenue sur REMIX BET</h2>
-<p>Connecte-toi pour accéder à ton espace.</p>
 
-<div id="nameArea" class="hidden">
-<label>Nom complet</label>
-<input id="name" placeholder="Ton nom complet">
-</div>
+<!-- AUTHENTIFICATION -->
+<section id="authPanel" class="panel">
+  <h2>Bienvenue sur REMIX BET</h2>
+  <p>Connecte-toi ou crée ton compte pour accéder à l'application.</p>
 
-<label>Adresse e-mail</label>
-<input id="email" type="email" placeholder="Adresse e-mail">
+  <div id="loginBox">
+    <h3>Connexion</h3>
+    <input id="loginEmail" type="email" placeholder="Adresse e-mail">
+    <input id="loginPassword" type="password" placeholder="Mot de passe">
+    <button class="blue" id="loginBtn">Se connecter</button>
+    <button id="showRegister">Créer un compte</button>
+  </div>
 
-<label>Mot de passe</label>
-<input id="password" type="password" placeholder="Mot de passe">
+  <div id="registerBox" class="hidden">
+    <h3>Créer un compte</h3>
+    <input id="registerName" type="text" placeholder="Ton nom">
+    <input id="registerEmail" type="email" placeholder="Adresse e-mail">
+    <input id="registerPassword" type="password" placeholder="Mot de passe (6 caractères minimum)">
+    <button class="blue" id="registerBtn">Créer mon compte</button>
+    <button id="showLogin">Retour à la connexion</button>
+  </div>
 
-<button id="authButton" style="width:100%">Me connecter</button>
-<p id="authMessage"></p>
-<p id="switchText">Pas encore de compte ?
-<a href="#" id="switchMode">Créer un compte</a></p>
+  <p id="authMessage" class="status"></p>
 </section>
 
-<section id="app" class="hidden">
-<div class="panel">
-Connecté : <b id="userLabel"></b>
-<button id="logout" style="float:right">Déconnexion</button>
-</div>
+<!-- APPLICATION -->
+<section id="appPanel" class="hidden">
 
-<nav>
-<button data-page="home">Accueil</button>
-<button data-page="matches">Matchs</button>
-<button data-page="analysis">Analyses</button>
-<button data-page="referral">Parrainage</button>
-</nav>
+  <div class="panel">
+    <div id="userLabel"></div>
+    <button class="red" id="logout">Déconnexion</button>
+  </div>
 
-<section id="home" class="panel page">
-<h2>Bienvenue dans REMIX BET</h2>
-<p>Consulte les rencontres et profite des analyses statistiques gratuites.</p>
-<button data-goto="matches">Voir les matchs</button>
-<button data-goto="analysis">Voir les analyses</button>
-<p class="note">Les analyses sont des estimations statistiques fondées sur les résultats disponibles. Aucun résultat n'est garanti.</p>
-</section>
+  <nav>
+    <button data-page="home">Accueil</button>
+    <button data-page="matches">Matchs</button>
+    <button data-page="analyses">Analyses</button>
+    <button data-page="referral">Parrainage</button>
+  </nav>
 
-<section id="matches" class="page hidden">
-<div class="panel">
-<h2>⚽ Matchs disponibles</h2>
-<label>Date de début</label>
-<input type="date" id="dateFrom">
-<label>Date de fin</label>
-<input type="date" id="dateTo">
-<button id="loadButton" style="width:100%">Charger les matchs</button>
-</div>
-<div id="matchesList"></div>
-</section>
+  <!-- ACCUEIL -->
+  <section id="home" class="panel page">
+    <h2>🏠 Accueil</h2>
+    <p>Bienvenue dans REMIX BET.</p>
+    <p>Consulte les rencontres disponibles, étudie les statistiques et partage ton lien personnel.</p>
+    <button class="blue" data-go="matches">Voir les matchs</button>
+    <button data-go="referral">Inviter mes amis</button>
+    <div class="status">
+      REMIX BET propose des informations et estimations statistiques.
+      Aucun résultat sportif n'est garanti.
+    </div>
+  </section>
 
-<section id="analysis" class="page hidden">
-<div class="panel">
-<h2>📊 Centre d'analyses statistiques</h2>
-<p>Les analyses gratuites apparaîtront ici.</p>
-<div id="analysisList">Charge d'abord les matchs.</div>
-</div>
-</section>
+  <!-- MATCHS -->
+  <section id="matches" class="panel page hidden">
+    <h2>⚽ Matchs disponibles</h2>
 
-<section id="referral" class="panel page hidden">
-<h2>🤝 Parrainage REMIX BET</h2>
-<p>Code promo : <b>REM1XBET</b></p>
-<p>Rejoins 1xBet avec notre code partenaire.</p>
-<a href="https://reffpa.com/L?tag=d_4768125m_129629c_REMIX_BET&site=4768125&ad=129629" target="_blank" rel="noopener">S'inscrire sur 1xBet</a>
-</section>
+    <label>Date de début</label>
+    <input type="date" id="dateFrom">
+
+    <label>Date de fin</label>
+    <input type="date" id="dateTo">
+
+    <label>Compétition (facultatif)</label>
+    <input type="text" id="competition" placeholder="Exemple : PL, PD, SA">
+
+    <button class="blue" id="loadMatches">Charger les matchs</button>
+    <p id="matchMessage" class="status">Choisis les dates puis charge les matchs.</p>
+    <div id="matchesList"></div>
+  </section>
+
+  <!-- ANALYSES -->
+  <section id="analyses" class="panel page hidden">
+    <h2>📊 Centre d'analyses statistiques</h2>
+    <p>Les analyses gratuites utilisent les résultats récents des deux équipes.</p>
+    <div id="analysisOutput" class="status">
+      Sélectionne un match et appuie sur « Analyser avec les statistiques ».
+    </div>
+  </section>
+
+  <!-- PARRAINAGE -->
+  <section id="referral" class="panel page hidden">
+    <h2>🤝 Parrainage REMIX BET</h2>
+    <p>Invite tes amis à rejoindre REMIX BET grâce à ton lien personnel.</p>
+
+    <label>Ton lien personnel d'invitation</label>
+    <input id="inviteLink" type="text" readonly>
+
+    <button class="blue" id="copyInvite">📋 Copier mon lien</button>
+    <button id="shareInvite">📲 Partager</button>
+
+    <p><a id="whatsappInvite" href="#" target="_blank" rel="noopener">Partager sur WhatsApp</a></p>
+    <p><a id="facebookInvite" href="#" target="_blank" rel="noopener">Partager sur Facebook</a></p>
+
+    <p id="inviteMessage" class="status">Ton lien personnel sera préparé ici.</p>
+
+    <hr>
+    <h3>Code partenaire 1xBet</h3>
+    <p>Code : <strong>REM1XBET</strong></p>
+    <a href="https://reffpa.com/L?tag=d_4768125m_129629c_REMIX_BET&site=4768125&ad=129629"
+       target="_blank" rel="noopener">S'inscrire sur 1xBet</a>
+
+    <p class="small">
+      Le lien personnel permet de partager ton invitation.
+      Le comptage automatique des filleuls et le calcul des récompenses nécessitent une configuration supplémentaire côté serveur.
+    </p>
+  </section>
+
 </section>
 </main>
 
-<footer>REMIX BET © 2026</footer>
+<footer>REMIX BET © 2026 — Analyses statistiques informatives</footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-<script>
-"use strict";
-
-firebase.initializeApp({
- apiKey:"AIzaSyDA-sBU1fL_q16OmbhFXYLQgRFy2G4aJnU",
- authDomain:"remix-bet-dce62.firebaseapp.com",
- projectId:"remix-bet-dce62",
- storageBucket:"remix-bet-dce62.firebasestorage.app",
- messagingSenderId:"558528517854",
- appId:"1:558528517854:web:b2bdddd541dae33438d44f",
- measurementId:"G-LBLFV7MWYR"
-});
-
-const auth=firebase.auth();
-const $=id=>document.getElementById(id);
-const API="https://remix-bet.remixntambue8.workers.dev";
-
-let creating=false;
-let matches=[];
-let activeAnalyses=new Set();
-
-function authMode(register){
- creating=register;
- $("authTitle").textContent=register?"Créer un compte":"Connexion à REMIX BET";
- $("authButton").textContent=register?"Créer mon compte":"Me connecter";
- $("nameArea").classList.toggle("hidden",!register);
- $("switchText").innerHTML=register?
- 'Déjà inscrit ? <a href="#" id="switchMode">Se connecter</a>':
- 'Pas encore de compte ? <a href="#" id="switchMode">Créer un compte</a>';
-}
-
-$("switchText").onclick=e=>{
- if(e.target.id==="switchMode"){
-  e.preventDefault();
-  authMode(!creating);
- }
+/* CONFIGURATION FIREBASE EXISTANTE */
+const firebaseConfig = {
+  apiKey: "AIzaSyDA-sBU1fL_q16OmbhFXYLQgRFy2G4aJnU",
+  authDomain: "remix-bet-dce62.firebaseapp.com",
+  projectId: "remix-bet-dce62",
+  storageBucket: "remix-bet-dce62.firebasestorage.app",
+  messagingSenderId: "558528517854",
+  appId: "1:558528517854:web:b2bdddd541dae33438d44f",
+  measurementId: "G-LBLFV7MWYR"
 };
 
-$("authButton").onclick=async()=>{
- const email=$("email").value.trim();
- const password=$("password").value;
- const name=$("name").value.trim();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
- if(!email||!password||(creating&&!name)){
-  $("authMessage").textContent="Remplis les champs demandés.";
-  return;
- }
+const WORKER_URL = "https://remix-bet.remixntambue8.workers.dev";
 
- if(password.length<6){
-  $("authMessage").textContent="Mot de passe : 6 caractères minimum.";
-  return;
- }
+const $ = id => document.getElementById(id);
 
- $("authButton").disabled=true;
- $("authMessage").textContent="Connexion en cours...";
+let currentMatches = [];
+let selectedMatch = null;
 
- try{
-  if(creating){
-   const r=await auth.createUserWithEmailAndPassword(email,password);
-   await r.user.updateProfile({displayName:name});
-  }else{
-   await auth.signInWithEmailAndPassword(email,password);
-  }
- }catch(e){
-  $("authMessage").textContent=e.message;
- }finally{
-  $("authButton").disabled=false;
- }
+function message(id, text, type="status") {
+  $(id).textContent = text;
+  $(id).className = "status " + type;
+}
+
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
+  $(page).classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+
+document.querySelectorAll("[data-go]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.go));
+});
+
+$("showRegister").onclick = () => {
+  $("loginBox").classList.add("hidden");
+  $("registerBox").classList.remove("hidden");
+  message("authMessage","");
 };
 
-auth.onAuthStateChanged(user=>{
- $("auth").classList.toggle("hidden",!!user);
- $("app").classList.toggle("hidden",!user);
+$("showLogin").onclick = () => {
+  $("registerBox").classList.add("hidden");
+  $("loginBox").classList.remove("hidden");
+  message("authMessage","");
+};
 
- if(user){
-  $("userLabel").textContent=(user.displayName||"Membre")+" — "+user.email;
-  showPage("home");
- }
-});
+/* CRÉATION DE COMPTE */
+$("registerBtn").onclick = async () => {
+  const name = $("registerName").value.trim();
+  const email = $("registerEmail").value.trim();
+  const password = $("registerPassword").value;
 
-$("logout").onclick=()=>auth.signOut();
-
-function showPage(page){
- document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
- $(page).classList.remove("hidden");
-}
-
-document.querySelectorAll("[data-page]").forEach(b=>{
- b.onclick=()=>showPage(b.dataset.page);
-});
-
-document.querySelectorAll("[data-goto]").forEach(b=>{
- b.onclick=()=>showPage(b.dataset.goto);
-});
-
-function dateString(d){
- return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
-
-const today=new Date();
-const end=new Date(today);
-end.setDate(end.getDate()+6);
-$("dateFrom").value=dateString(today);
-$("dateTo").value=dateString(end);
-
-async function fetchTimeout(url,options={},timeout=30000){
- const controller=new AbortController();
- const timer=setTimeout(()=>controller.abort(),timeout);
-
- try{
-  return await fetch(url,{
-   ...options,
-   signal:controller.signal,
-   cache:"no-store"
-  });
- }catch(e){
-  if(e.name==="AbortError"){
-   throw Error("Le serveur ne répond pas dans le délai prévu.");
-  }
-  throw e;
- }finally{
-  clearTimeout(timer);
- }
-}
-
-async function readResponse(response){
- const raw=await response.text();
- let data={};
-
- try{
-  data=raw?JSON.parse(raw):{};
- }catch(e){
-  throw Error("Réponse serveur illisible. Code HTTP "+response.status);
- }
-
- if(!response.ok){
-  throw Error(data.details||data.error||data.message||"Erreur HTTP "+response.status);
- }
-
- return data;
-}
-
-async function request(params){
- const url=new URL(API);
- Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
- const response=await fetchTimeout(url,{},25000);
- return readResponse(response);
-}
-
-function text(parent,tag,value){
- const el=document.createElement(tag);
- el.textContent=value;
- parent.appendChild(el);
- return el;
-}
-
-function dateDisplay(value){
- return new Date(value).toLocaleString("fr-FR");
-}
-
-$("loadButton").onclick=chargerMatchs;
-
-async function chargerMatchs(){
- const from=$("dateFrom").value;
- const to=$("dateTo").value;
-
- if(!from||!to||to<from){
-  $("matchesList").textContent="Vérifie les dates.";
-  return;
- }
-
- const days=(Date.parse(to+"T00:00:00Z")-Date.parse(from+"T00:00:00Z"))/86400000;
-
- if(days>13){
-  $("matchesList").textContent="Maximum 14 jours.";
-  return;
- }
-
- $("loadButton").disabled=true;
- $("matchesList").textContent="Chargement des matchs...";
-
- try{
-  const data=await request({dateFrom:from,dateTo:to});
-  matches=data.matches||[];
-  $("matchesList").replaceChildren();
-  $("analysisList").replaceChildren();
-  activeAnalyses.clear();
-
-  if(!matches.length){
-   $("matchesList").textContent="Aucun match disponible sur cette période.";
-   $("analysisList").textContent="Aucun match à analyser.";
-   return;
+  if (!name || !email || !password) {
+    return message("authMessage","Remplis tous les champs.","error");
   }
 
-  matches.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
-
-  matches.forEach((m,i)=>{
-   const card=document.createElement("article");
-   card.className="match";
-
-   text(card,"div",m.competition?.name||"Compétition");
-   text(card,"div",(m.homeTeam?.name||"Domicile")+" — "+(m.awayTeam?.name||"Extérieur")).className="teams";
-   text(card,"p",dateDisplay(m.utcDate)).className="meta";
-
-   const button=text(card,"button","Analyse gratuite");
-   const status=text(card,"p","En attente d'analyse.");
-   status.className="status meta";
-
-   button.onclick=()=>analyser(i,button,status);
-   $("matchesList").appendChild(card);
-
-   const ab=text($("analysisList"),"button",
-    (m.homeTeam?.name||"Domicile")+" — "+(m.awayTeam?.name||"Extérieur"));
-   ab.style.margin="5px";
-   ab.onclick=()=>analyser(i,ab,status);
-  });
-
- }catch(e){
-  $("matchesList").textContent="Erreur : "+e.message;
- }finally{
-  $("loadButton").disabled=false;
- }
-}
-
-function poisson(lambda,goals){
- let p=Math.exp(-lambda);
- for(let i=1;i<=goals;i++)p*=lambda/i;
- return p;
-}
-
-function teamStats(list,teamId){
- let scored=0;
- let conceded=0;
- let count=0;
-
- (list||[]).forEach(x=>{
-  const hs=Number(x.score?.home);
-  const as=Number(x.score?.away);
-
-  if(!Number.isFinite(hs)||!Number.isFinite(as))return;
-
-  if(x.homeId===teamId){
-   scored+=hs;
-   conceded+=as;
-   count++;
-  }else if(x.awayId===teamId){
-   scored+=as;
-   conceded+=hs;
-   count++;
+  if (password.length < 6) {
+    return message("authMessage","Le mot de passe doit contenir au moins 6 caractères.","error");
   }
- });
 
- if(!count){
-  throw Error("Impossible de calculer les statistiques de cette équipe.");
- }
+  try {
+    message("authMessage","Création du compte en cours...");
+    const result = await createUserWithEmailAndPassword(auth,email,password);
+    await updateProfile(result.user,{displayName:name});
+    message("authMessage","Compte créé avec succès !","success");
+  } catch(error) {
+    message("authMessage",firebaseError(error),"error");
+  }
+};
 
- return {
-  scored:scored/count,
-  conceded:conceded/count,
-  count
- };
+/* CONNEXION */
+$("loginBtn").onclick = async () => {
+  const email = $("loginEmail").value.trim();
+  const password = $("loginPassword").value;
+
+  if (!email || !password) {
+    return message("authMessage","Entre ton adresse e-mail et ton mot de passe.","error");
+  }
+
+  try {
+    message("authMessage","Connexion en cours...");
+    await signInWithEmailAndPassword(auth,email,password);
+  } catch(error) {
+    message("authMessage",firebaseError(error),"error");
+  }
+};
+
+function firebaseError(error) {
+  const codes = {
+    "auth/invalid-email":"Adresse e-mail invalide.",
+    "auth/user-not-found":"Aucun compte trouvé avec cette adresse.",
+    "auth/wrong-password":"Mot de passe incorrect.",
+    "auth/invalid-credential":"Adresse e-mail ou mot de passe incorrect.",
+    "auth/email-already-in-use":"Cette adresse e-mail possède déjà un compte.",
+    "auth/weak-password":"Choisis un mot de passe plus solide.",
+    "auth/network-request-failed":"Problème de connexion Internet."
+  };
+  return codes[error.code] || error.message || "Une erreur est survenue.";
 }
 
-async function analyser(index,button,matchStatus){
- const m=matches[index];
+/* DÉCONNEXION */
+$("logout").onclick = () => signOut(auth);
 
- if(!m||!m.homeTeam?.id||!m.awayTeam?.id){
-  alert("Informations du match incomplètes.");
-  return;
- }
+/* LIEN PERSONNEL DE PARRAINAGE */
+function setupReferral(user) {
+  const link = location.origin + location.pathname +
+    "?ref=" + encodeURIComponent(user.uid);
 
- if(activeAnalyses.has(index))return;
- activeAnalyses.add(index);
+  $("inviteLink").value = link;
 
- button.disabled=true;
- const oldLabel=button.textContent;
- button.textContent="Analyse en cours...";
+  $("whatsappInvite").href =
+    "https://wa.me/?text=" +
+    encodeURIComponent("Rejoins-moi sur REMIX BET : " + link);
 
- const output=document.createElement("div");
- output.className="panel";
+  $("facebookInvite").href =
+    "https://www.facebook.com/sharer/sharer.php?u=" +
+    encodeURIComponent(link);
 
- text(output,"h3",(m.homeTeam.name||"Domicile")+" — "+(m.awayTeam.name||"Extérieur"));
-
- const status=text(output,"p","Récupération des statistiques...");
- status.className="status meta";
-
- $("analysisList").prepend(output);
-
- function updateStatus(message,error=false){
-  status.textContent=message;
-  status.className=error?"status error":"status meta";
-
-  if(matchStatus){
-   matchStatus.textContent=message;
-   matchStatus.className=error?"status error":"status meta";
-  }
- }
-
- try{
-  updateStatus("Étape 1/2 : récupération des derniers matchs...");
-
-  const [homeData,awayData]=await Promise.all([
-   request({action:"team-matches",teamId:m.homeTeam.id}),
-   request({action:"team-matches",teamId:m.awayTeam.id})
-  ]);
-
-  const simplify=list=>(list||[])
-   .filter(x=>x.status==="FINISHED")
-   .slice(0,10)
-   .map(x=>({
-    homeId:x.homeTeam?.id,
-    awayId:x.awayTeam?.id,
-    date:x.utcDate,
-    score:{
-     home:x.score?.fullTime?.home,
-     away:x.score?.fullTime?.away
+  $("copyInvite").onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      message("inviteMessage","Lien copié avec succès !","success");
+    } catch(error) {
+      $("inviteLink").select();
+      message("inviteMessage","Sélectionne le lien puis copie-le.","status");
     }
-   }));
+  };
 
-  const homeRecent=simplify(homeData.matches);
-  const awayRecent=simplify(awayData.matches);
-
-  if(homeRecent.length<3||awayRecent.length<3){
-   throw Error("Pas assez de matchs terminés pour ces équipes. Essaie une autre rencontre.");
-  }
-
-  updateStatus("Étape 2/2 : calcul statistique gratuit...");
-
-  const hs=teamStats(homeRecent,m.homeTeam.id);
-  const as=teamStats(awayRecent,m.awayTeam.id);
-
-  const homeGoals=Math.max(0.15,(hs.scored+as.conceded)/2*1.08);
-  const awayGoals=Math.max(0.15,(as.scored+hs.conceded)/2*0.92);
-
-  let homeWin=0;
-  let draw=0;
-  let awayWin=0;
-  let btts=0;
-  let over25=0;
-  let totalProbability=0;
-  const scores=[];
-
-  for(let h=0;h<=10;h++){
-   for(let a=0;a<=10;a++){
-    const probability=poisson(homeGoals,h)*poisson(awayGoals,a);
-
-    totalProbability+=probability;
-
-    if(h>a)homeWin+=probability;
-    else if(h===a)draw+=probability;
-    else awayWin+=probability;
-
-    if(h>0&&a>0)btts+=probability;
-    if(h+a>=3)over25+=probability;
-
-    scores.push({h,a,p:probability});
-   }
-  }
-
-  if(totalProbability<=0){
-   throw Error("Le calcul statistique n'a pas abouti.");
-  }
-
-  homeWin/=totalProbability;
-  draw/=totalProbability;
-  awayWin/=totalProbability;
-  btts/=totalProbability;
-  over25/=totalProbability;
-
-  scores.forEach(s=>s.p/=totalProbability);
-  scores.sort((a,b)=>b.p-a.p);
-
-  const percent=n=>(n*100).toFixed(1)+" %";
-
-  const analysis=document.createElement("div");
-  analysis.className="ai";
-
-  const lines=[
-   "📊 ANALYSE STATISTIQUE GRATUITE",
-   "",
-   "Compétition : "+(m.competition?.name||"Non précisée"),
-   "Match : "+m.homeTeam.name+" — "+m.awayTeam.name,
-   "Date : "+dateDisplay(m.utcDate),
-   "",
-   "MOYENNES SUR LES DERNIERS MATCHS",
-   m.homeTeam.name+" : "+hs.scored.toFixed(2)+" but(s) marqué(s), "+hs.conceded.toFixed(2)+" encaissé(s).",
-   m.awayTeam.name+" : "+as.scored.toFixed(2)+" but(s) marqué(s), "+as.conceded.toFixed(2)+" encaissé(s).",
-   "",
-   "PROBABILITÉS ESTIMÉES",
-   "Victoire "+m.homeTeam.name+" : "+percent(homeWin),
-   "Match nul : "+percent(draw),
-   "Victoire "+m.awayTeam.name+" : "+percent(awayWin),
-   "Les deux équipes marquent : "+percent(btts),
-   "Plus de 2,5 buts : "+percent(over25),
-   "Moins de 2,5 buts : "+percent(1-over25),
-   "",
-   "3 SCORES LES PLUS PROBABLES",
-   ...scores.slice(0,3).map(s=>s.h+" - "+s.a+" : "+percent(s.p)),
-   "",
-   "Buts attendus : "+homeGoals.toFixed(2)+" — "+awayGoals.toFixed(2),
-   "",
-   "Méthode : moyennes des buts récents et distribution de Poisson.",
-   "Cette analyse est statistique et ne constitue pas une certitude."
-  ];
-
-  analysis.textContent=lines.join("\n");
-  output.appendChild(analysis);
-
-  text(output,"p",
-   "Attention : aucun pronostic n'est garanti. Ne mise jamais de l'argent que tu ne peux pas perdre."
-  ).className="note";
-
-  updateStatus("Analyse statistique terminée.");
-  showPage("analysis");
-
- }catch(e){
-  updateStatus("ANALYSE NON DISPONIBLE : "+e.message,true);
-  text(output,"p","Aucun pronostic fictif ne sera affiché. Vérifie les statistiques du match et réessaie.").className="note";
- }finally{
-  activeAnalyses.delete(index);
-  button.disabled=false;
-  button.textContent=oldLabel;
- }
+  $("shareInvite").onclick = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title:"REMIX BET",
+          text:"Rejoins-moi sur REMIX BET !",
+          url:link
+        });
+      } catch(error) {}
+    } else {
+      $("copyInvite").click();
+    }
+  };
 }
 
-authMode(false);
+/* SURVEILLANCE DE LA CONNEXION */
+onAuthStateChanged(auth, user => {
+  if (user) {
+    $("authPanel").classList.add("hidden");
+    $("appPanel").classList.remove("hidden");
+    $("userLabel").textContent =
+      "Connecté : " + (user.displayName || "Membre") + " — " + user.email;
+    setupReferral(user);
+    showPage("home");
+  } else {
+    $("authPanel").classList.remove("hidden");
+    $("appPanel").classList.add("hidden");
+  }
+});
+
+/* DATES PAR DÉFAUT */
+function localDate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth()+1).padStart(2,"0");
+  const d = String(date.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+
+const today = new Date();
+const nextWeek = new Date();
+nextWeek.setDate(today.getDate()+7);
+
+$("dateFrom").value = localDate(today);
+$("dateTo").value = localDate(nextWeek);
+
+/* CHARGEMENT DES MATCHS */
+$("loadMatches").onclick = loadMatches;
+
+async function loadMatches() {
+  const from = $("dateFrom").value;
+  const to = $("dateTo").value;
+  const competition = $("competition").value.trim();
+
+  if (!from || !to || from > to) {
+    return message("matchMessage","Vérifie les dates choisies.","error");
+  }
+
+  $("matchesList").innerHTML = "";
+  message("matchMessage","Chargement des rencontres...");
+
+  try {
+    let url = WORKER_URL + "/?dateFrom=" +
+      encodeURIComponent(from) + "&dateTo=" + encodeURIComponent(to);
+
+    if (competition) {
+      url += "&competition=" + encodeURIComponent(competition);
+    }
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Erreur lors du chargement des matchs.");
+    }
+
+    currentMatches = Array.isArray(data.matches) ? data.matches : [];
+
+    if (!currentMatches.length) {
+      message(
+        "matchMessage",
+        "Aucun match disponible pour ces dates dans les compétitions autorisées par votre clé API.",
+        "error"
+      );
+      return;
+    }
+
+    message("matchMessage",currentMatches.length + " rencontre(s) trouvée(s).","success");
+    displayMatches(currentMatches);
+
+  } catch(error) {
+    message("matchMessage","Impossible de charger les matchs : " + error.message,"error");
+  }
+}
+
+function displayMatches(matches) {
+  const container = $("matchesList");
+  container.innerHTML = "";
+
+  matches.forEach((match,index) => {
+    const home = match.homeTeam?.name || "Équipe domicile";
+    const away = match.awayTeam?.name || "Équipe extérieure";
+    const date = match.utcDate ? new Date(match.utcDate).toLocaleString("fr-FR") : "Date non précisée";
+    const competition = match.competition?.name || "Compétition";
+
+    const card = document.createElement("div");
+    card.className = "match";
+
+    const title = document.createElement("strong");
+    title.textContent = home + " — " + away;
+
+    const details = document.createElement("p");
+    details.className = "meta";
+    details.textContent = competition + " • " + date;
+
+    const status = document.createElement("p");
+    status.className = "small";
+    status.textContent = "Statut : " + (match.status || "Non précisé");
+
+    const analyze = document.createElement("button");
+    analyze.className = "blue";
+    analyze.textContent = "Analyser avec les statistiques";
+    analyze.onclick = () => analyzeMatch(match);
+
+    card.append(title,details,status,analyze);
+    container.appendChild(card);
+  });
+}
+
+/* RÉCUPÉRATION DES DERNIERS MATCHS D'UNE ÉQUIPE */
+async function getTeamMatches(teamId) {
+  if (!teamId) return [];
+
+  const url = WORKER_URL + "/?action=team-matches&teamId=" +
+    encodeURIComponent(teamId);
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Impossible de récupérer les résultats récents.");
+  }
+
+  return Array.isArray(data.matches) ? data.matches : [];
+}
+
+/* CALCUL DES STATISTIQUES */
+function getTeamStats(matches, teamId) {
+  const finished = matches.filter(m =>
+    m.status === "FINISHED" &&
+    m.score?.fullTime?.home !== null &&
+    m.score?.fullTime?.away !== null
+  ).slice(0,10);
+
+  if (!finished.length) return null;
+
+  let scored = 0;
+  let conceded = 0;
+
+  finished.forEach(m => {
+    const isHome = String(m.homeTeam?.id) === String(teamId);
+    const homeGoals = Number(m.score.fullTime.home);
+    const awayGoals = Number(m.score.fullTime.away);
+
+    scored += isHome ? homeGoals : awayGoals;
+    conceded += isHome ? awayGoals : homeGoals;
+  });
+
+  return {
+    played:finished.length,
+    scored:scored/finished.length,
+    conceded:conceded/finished.length
+  };
+}
+
+function poisson(lambda,k) {
+  let factorial = 1;
+  for(let i=2;i<=k;i++) factorial *= i;
+  return Math.exp(-lambda) * Math.pow(lambda,k) / factorial;
+}
+
+/* ANALYSE STATISTIQUE GRATUITE */
+async function analyzeMatch(match) {
+  selectedMatch = match;
+  showPage("analyses");
+
+  const homeName = match.homeTeam?.name || "Équipe domicile";
+  const awayName = match.awayTeam?.name || "Équipe extérieure";
+
+  $("analysisOutput").textContent =
+    "Récupération des derniers résultats de " + homeName + " et " + awayName + "...";
+
+  try {
+    const [homeMatches,awayMatches] = await Promise.all([
+      getTeamMatches(match.homeTeam?.id),
+      getTeamMatches(match.awayTeam?.id)
+    ]);
+
+    const homeStats = getTeamStats(homeMatches,match.homeTeam?.id);
+    const awayStats = getTeamStats(awayMatches,match.awayTeam?.id);
+
+    if (!homeStats || !awayStats) {
+      throw new Error("Pas assez de résultats récents pour réaliser une analyse fiable.");
+    }
+
+    const homeExpected = Math.max(
+      0.15,
+      (homeStats.scored + awayStats.conceded) / 2
+    );
+
+    const awayExpected = Math.max(
+      0.15,
+      (awayStats.scored + homeStats.conceded) / 2
+    );
+
+    let homeWin = 0;
+    let draw = 0;
+    let awayWin = 0;
+    let over25 = 0;
+    let btts = 0;
+    let total = 0;
+
+    for(let h=0;h<=8;h++) {
+      for(let a=0;a<=8;a++) {
+        const probability = poisson(homeExpected,h) * poisson(awayExpected,a);
+        total += probability;
+
+        if(h>a) homeWin += probability;
+        else if(h===a) draw += probability;
+        else awayWin += probability;
+
+        if(h+a>2) over25 += probability;
+        if(h>0 && a>0) btts += probability;
+      }
+    }
+
+    const pct = value => (value/total*100).toFixed(1) + "%";
+    const best = [
+      {name:"Victoire " + homeName, value:homeWin},
+      {name:"Match nul", value:draw},
+      {name:"Victoire " + awayName, value:awayWin}
+    ].sort((a,b)=>b.value-a.value)[0];
+
+    $("analysisOutput").innerHTML = `
+      <h3>${escapeHTML(homeName)} — ${escapeHTML(awayName)}</h3>
+      <p class="meta">${escapeHTML(match.competition?.name || "Compétition")}</p>
+
+      <div class="result">
+        <strong>Forme statistique — derniers matchs disponibles</strong>
+        <p>${escapeHTML(homeName)} : ${homeStats.played} matchs, moyenne de ${homeStats.scored.toFixed(2)} but(s) marqué(s), ${homeStats.conceded.toFixed(2)} encaissé(s).</p>
+        <p>${escapeHTML(awayName)} : ${awayStats.played} matchs, moyenne de ${awayStats.scored.toFixed(2)} but(s) marqué(s), ${awayStats.conceded.toFixed(2)} encaissé(s).</p>
+      </div>
+
+      <h3>Probabilités estimées</h3>
+      <div class="prob"><span>Victoire ${escapeHTML(homeName)}</span><strong>${pct(homeWin)}</strong></div>
+      <div class="prob"><span>Match nul</span><strong>${pct(draw)}</strong></div>
+      <div class="prob"><span>Victoire ${escapeHTML(awayName)}</span><strong>${pct(awayWin)}</strong></div>
+      <div class="prob"><span>Plus de 2,5 buts</span><strong>${pct(over25)}</strong></div>
+      <div class="prob"><span>Les deux équipes marquent</span><strong>${pct(btts)}</strong></div>
+
+      <div class="result">
+        <strong>Projection statistique principale :</strong>
+        <p>${escapeHTML(best.name)} (${pct(best.value)})</p>
+        <p>Projection moyenne des buts : ${homeExpected.toFixed(2)} — ${awayExpected.toFixed(2)}</p>
+      </div>
+
+      <p class="small">Estimation mathématique basée sur les résultats récents disponibles. Ce n'est ni une certitude ni une garantie de gain.</p>
+    `;
+
+  } catch(error) {
+    $("analysisOutput").textContent =
+      "Analyse non disponible : " + error.message;
+  }
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
+}
+
 </script>
 </body>
-</html>
+        </html>
